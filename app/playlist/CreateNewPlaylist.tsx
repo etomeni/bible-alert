@@ -1,0 +1,136 @@
+import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+
+import { useNavigation } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/state/store";
+import { getBibleBookVerses } from '@/constants/resources';
+import Colors from '@/constants/Colors';
+import { useState } from 'react';
+
+export default function CreateNewPlaylist() {
+  const [playlistNameValue, setPlaylistNameValue] = useState('');
+  const settings = useSelector((state: RootState) => state.settings);
+  const navigation = useNavigation();
+
+  const createNewFunc = () => {
+    console.log('hello');
+
+    navigation.goBack();
+  }
+
+  const themeStyles = StyleSheet.create({
+    text: {
+      // marginBottom: 16,
+      textAlign: 'justify',
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+      fontSize: settings.fontSize
+    },
+    textColor: {
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+    },
+    border: {
+      borderColor: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+    },
+    iconColor: {
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+    },
+    contentBg: {
+      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+    },
+    playlistNameInput: {
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
+      borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
+      fontSize: settings.fontSize
+    },
+    inputContainer: {
+      borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
+    },
+    textSearchVerse: {
+      textAlign: 'justify',
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+      fontSize: settings.fontSize + 5
+    }
+  });
+
+
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
+
+      <View style={{padding: 16, flex: 1}}>
+        <View style={[styles.inputContainer, themeStyles.inputContainer]}>
+          <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 16}]}>
+            <Text>Enter a playlist name</Text>
+            <Text style={{color: '#de2341'}}> *</Text>
+          </Text>
+
+          <TextInput
+            style={[styles.playlistNameInput, themeStyles.playlistNameInput]}
+            onChangeText={setPlaylistNameValue}
+            value={playlistNameValue}
+            selectionColor={themeStyles.textColor.color}
+            placeholder="New playlist name"
+            placeholderTextColor={'gray'}
+            keyboardType="default"
+            returnKeyType="done"
+            // blurOnSubmit={true}
+            inputMode="text"
+            enterKeyHint="done"
+            onKeyPress={({nativeEvent: {key: keyValue}}) => {
+              // const enteredKey = nativeEvent.key;
+              // console.log(keyValue);
+              if (keyValue == 'Enter') {
+                createNewFunc();
+              }
+            }}
+            autoFocus={true}
+          />
+        </View>
+
+        <View style={{marginTop: 'auto'}}>
+          <TouchableOpacity
+            onPress={() => { createNewFunc(); }}
+            disabled={playlistNameValue ? false : true}
+            style={[styles.btnContainer, { backgroundColor: playlistNameValue ? Colors.primary : Colors.primaryDark }]}
+          >
+            <Text style={[themeStyles.textColor, styles.btnText, { color: playlistNameValue ? themeStyles.textColor.color : 'gray' } ]}>Create</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  )
+}
+
+
+const styles = StyleSheet.create({
+  playlistNameInput: {
+    // height: 40,
+    // margin: 16,
+    borderWidth: 0.4,
+    borderRadius: 5,
+    // borderColor: 'gray',
+    padding: 10,
+    fontSize: 16,
+    flexGrow: 1,
+  },
+  inputContainer: {
+    // flexDirection: 'row',
+    // padding: 16,
+    borderBottomWidth: 1,
+  },
+  btnContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: Colors.primaryDark,
+    padding: 7,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  btnText: {
+    fontSize: 30,
+    // color: 'gray'
+  }
+  
+});

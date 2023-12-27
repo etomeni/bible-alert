@@ -1,0 +1,302 @@
+import { View, Text, StyleSheet, ScrollView,
+    TouchableOpacity, Share
+} from 'react-native'
+import * as Clipboard from 'expo-clipboard';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
+import Toast from 'react-native-root-toast';
+import * as Speech from 'expo-speech';
+
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
+import { AppDispatch, RootState } from '@/state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveBookmark } from '@/state/slices/bookmarkSlice';
+import { getLocalStorage, setLocalStorage } from '@/constants/resources';
+import { bibleInterface, playlistInterface } from '@/constants/modelTypes';
+import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
+import { useNavigation } from 'expo-router';
+
+
+export type Ref = BottomSheetModal;
+const BottomSheet = forwardRef<Ref>((props, ref) => {
+    const navigation: any = useNavigation();
+    const [sharedText, setSharedText] = useState('');
+    const [selectedBibleBook, setSelectedBibleBook] = useState('');
+    const settings = useSelector((state: RootState) => state.settings);
+    const s_BibleVerse = useSelector((state: RootState) => state.biblVerse);
+    const dispatch = useDispatch<AppDispatch>();
+    
+    // const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
+    const snapPoints = useMemo(() => ['50%'], []);
+    const renderBackdrop = useCallback((props: any) => 
+        <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} { ...props } />
+    ,[]);
+    const { dismiss } = useBottomSheetModal();
+
+
+    useEffect(() => {
+        if (s_BibleVerse.length) {
+            const bibleVerse = s_BibleVerse[0];
+            setSharedText(`${ bibleVerse.text } \n\n---${ bibleVerse.book_name } ${ bibleVerse.chapter }:${ bibleVerse.verse } \nBible Alert`);
+            setSelectedBibleBook(`${ bibleVerse.book_name } ${ bibleVerse.chapter }:${ bibleVerse.verse }`);
+        }
+    }, [s_BibleVerse]);
+
+    const onShare = async () => {
+        try {
+            const shareResult = await Share.share({
+                title: selectedBibleBook,
+                message: sharedText
+            });
+
+            if (shareResult.action === Share.sharedAction) {
+                // if (shareResult.activityType) {
+                //     console.log("shared with activity type of: ", shareResult.activityType);
+                // } else {
+                //     console.log("shared");
+                // }
+
+                const msg = `shared!`;
+                let toast = Toast.show(msg, {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
+
+                dismiss();
+            }
+        } catch (error) {
+            console.log(error);
+
+            const msg = `Request failed to share.!`;
+            let toast = Toast.show(msg, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+            });
+        }
+    }
+
+    const copyToClipboard = async () => {
+        await Clipboard.setStringAsync(sharedText);
+
+        const msg = `copied to clipboard!`;
+        let toast = Toast.show(msg, {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 0,
+        });
+
+        dismiss();
+    };
+
+    const addToBookmark = () => {
+        const _bible = s_BibleVerse[0];
+        getLocalStorage("bookmark").then(
+            (res: any) => {
+                // console.log(res);
+                const state: bibleInterface[] = res ? res : [];
+                const isUnique = state.every(item => item.book !== _bible.book || item.chapter !== _bible.chapter || item.verse !== _bible.verse);
+                if (isUnique) {
+                    state.unshift(_bible);
+                    setLocalStorage("bookmark", state);
+                }
+            }
+        );
+
+        const msg = `${ _bible.book_name } ${ _bible.chapter }:${ _bible.verse } bookmarked`;
+        let toast = Toast.show(msg, {
+            duration: Toast.durations.LONG,
+            // position: Toast.positions.BOTTOM,
+            // shadow: true,
+            // animation: true,
+            // hideOnPress: true,
+            // delay: 0,
+        });
+
+        dismiss();
+    };
+
+    const addToPlaylist = () => {
+        const _bible: playlistInterface = s_BibleVerse[0];
+        
+        dispatch(setTemptPlaylistData(_bible));
+        dismiss();
+
+        navigation.navigate('playlist/AddToPlaylist');
+        // navigation.navigate('PlaylistEdit');
+    };
+
+    const _read = () => {
+        let thingToSayStarting = '';
+        const thingToSayEnding = `${s_BibleVerse[0].chapter + " vs" + s_BibleVerse[0].verse + " - " + s_BibleVerse[0].text}`;
+        if (s_BibleVerse[0].book_name[0] == '1') {
+            thingToSayStarting = "1st " + s_BibleVerse[0].book_name.slice(1);
+        } else if(s_BibleVerse[0].book_name[0] == '2') {
+            thingToSayStarting = "2nd " + s_BibleVerse[0].book_name.slice(1);
+        } else {
+            thingToSayStarting = s_BibleVerse[0].book_name;
+        }
+
+        const thingToSay = `${thingToSayStarting + " " + thingToSayEnding}`;
+
+        Speech.speak(
+            thingToSay,
+            {
+                rate: 0.8,
+                pitch: 0.6,
+                
+                // voice: 'com.apple.ttsbundle.Moira-compact'
+                // onDone: hello(),
+                // onStart: hello(),
+                // onStopped: () => hello(),
+                // onBoundary: hello
+                // onDone: () => {
+                //     console.log("Hello");
+                    
+                //     // const lastIndex = playlists.length - 1;
+                //     // const currentIndex = playlists.findIndex(item => item.book === displayVerse.book || item.chapter === displayVerse.chapter || item.verse === displayVerse.verse);
+                //     // if (lastIndex != currentIndex) {
+                //     //     setDisplayVerse(playlists[currentIndex + 1]);
+                //     // }
+                //     setDisplayVerse(playlists[playingIndex + 1]);
+                // },
+                // onStopped: () => {
+                //     console.log("Hello");
+                //     setDisplayVerse(playlists[playingIndex + 1]);
+                // },
+                // onStart: () => {
+                //     console.log("Hello");
+                //     setDisplayVerse(playlists[playingIndex + 1]);
+                // },
+                // onBoundary: (boundaries: any) => {
+                //     const { charIndex, charLength } = boundaries;
+                //     console.log(charIndex);
+                //     setDisplayVerse(playlists[playingIndex + 1]);
+                //     console.log("Hello");
+
+                // }
+            }
+        );
+
+        dismiss();
+    }
+
+
+    const themeStyles = StyleSheet.create({
+        text: {
+            // marginBottom: 16,
+            textAlign: 'justify',
+            color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+            fontSize: settings.fontSize
+        },
+        textColor: {
+            color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+        },
+        background: {
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.background : Colors.light.background
+        },
+        border: {
+            borderColor: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+        },
+        iconColor: {
+            color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+        },
+        contentBg: {
+            // backgroundColor: '#f6f3ea43', // #f6f3ea43
+            backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+        },
+        BSbackground: {
+            backgroundColor: settings.colorTheme == 'dark' ? "rgb(60, 60, 60)" : 'rgb(241, 241, 241)'
+        },
+    });
+
+
+    return (
+        <BottomSheetModal ref={ref} snapPoints={snapPoints} 
+            overDragResistanceFactor={0}
+            backgroundStyle={{
+                backgroundColor: themeStyles.BSbackground.backgroundColor,
+            }}
+            backdropComponent={renderBackdrop}
+        >
+            <View style={styles.modalContainer}>
+                <Text style={[styles.titleText, themeStyles.textColor]}>{selectedBibleBook}</Text>
+
+                <View style={styles.listParentContainer}>
+                    <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => _read()}>
+                        <Ionicons style={[styles.listIcon, themeStyles.iconColor]} name="play" size={24} />
+                        <Text style={[styles.listText, themeStyles.textColor]}>Read</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => addToPlaylist()}>
+                        <MaterialIcons style={[styles.listIcon, themeStyles.iconColor]} name="playlist-add" size={24} color="black" />
+                        <Text style={[styles.listText, themeStyles.textColor]}>Add to Playlist</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => addToBookmark()}>
+                        <Ionicons style={[styles.listIcon, themeStyles.iconColor]} name="bookmarks-outline" size={24} color="black" />
+                        <Text style={[styles.listText, themeStyles.textColor]}>Bookmark</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => copyToClipboard()}>
+                        <Ionicons style={[styles.listIcon, themeStyles.iconColor]} name="copy-outline" size={24} color="black" />
+                        <Text style={[styles.listText, themeStyles.textColor]}>Copy</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => onShare()}>
+                        <Ionicons style={[styles.listIcon, themeStyles.iconColor]} name="share-social-outline" size={24} color="black" />
+                        <Text style={[styles.listText, themeStyles.textColor]}>Share</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* <Button title='dismiss' onPress={() => dismiss()} /> */}
+            </View>
+        </BottomSheetModal>
+    )
+});
+
+export default BottomSheet;
+
+
+const styles = StyleSheet.create({
+    modalContainer: {
+      paddingHorizontal: 16,
+    //   backgroundColor: 'gray'
+    },
+    titleText: {
+        fontSize: 24,
+        fontWeight: 'bold'
+    },
+    listParentContainer: {
+        marginVertical: 16
+    },
+    listContainer: {
+      flexDirection: 'row',
+      gap: 10,
+      alignItems: 'center',
+      paddingVertical: 15,
+      paddingHorizontal: 10,
+      marginBottom: 5,
+      backgroundColor: 'rgba(255, 255, 255, 0.6)',
+      borderRadius: 5
+    },
+    listIcon: {
+
+    },
+    listText: {
+        fontSize: 18
+    }
+});
+  
