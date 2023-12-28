@@ -12,7 +12,7 @@ export default function BackButtonArrow() {
 
     const themeStyles = StyleSheet.create({
         backButtonArrowIcon: {
-            fontSize: 24,
+            fontSize: 30,
             fontWeight: 'bold',
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         }

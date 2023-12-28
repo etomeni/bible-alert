@@ -1,20 +1,40 @@
-import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, 
+  StyleSheet, TouchableOpacity 
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-
 import { useNavigation } from "expo-router";
+import { useState } from 'react';
+import Toast from 'react-native-root-toast';
+
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
-import { getBibleBookVerses } from '@/constants/resources';
 import Colors from '@/constants/Colors';
-import { useState } from 'react';
+import { createNewPlaylist } from '@/state/slices/playlistSlice';
+
 
 export default function CreateNewPlaylist() {
   const [playlistNameValue, setPlaylistNameValue] = useState('');
   const settings = useSelector((state: RootState) => state.settings);
+  const temptBibleVerse = useSelector((state: RootState) => state.temptData.temptBibleVerse);
   const navigation = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
 
   const createNewFunc = () => {
-    console.log('hello');
+    // console.log(playlistNameValue);
+    dispatch(createNewPlaylist({
+      title: playlistNameValue,
+      bibleVerse: temptBibleVerse
+    }));
+
+    const msg = `new playlist created!`;
+    let toast = Toast.show(msg, {
+        duration: Toast.durations.LONG,
+        // position: Toast.positions.BOTTOM,
+        // shadow: true,
+        // animation: true,
+        // hideOnPress: true,
+        // delay: 0,
+    });
 
     navigation.goBack();
   }

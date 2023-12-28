@@ -126,7 +126,7 @@ function RootLayoutNav() {
                 headerTitleStyle: { fontSize: 30 },
                 // headerBackVisible: false
               }} />
-              <Stack.Screen name="PlaylistView" options={{ 
+              {/* <Stack.Screen name="PlaylistView" options={{ 
                 presentation: 'modal', headerShown: false ,
                 headerTitleStyle: { fontSize: 30 },
                 headerLeft: () => (
@@ -139,7 +139,7 @@ function RootLayoutNav() {
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-              }} />
+              }} /> */}
 
               <Stack.Screen name="playlist/CreateNewPlaylist" options={{ 
                 presentation: 'modal', headerShown: true,
@@ -158,7 +158,8 @@ function RootLayoutNav() {
                 title: 'Add To Playlists'
               }} />
               <Stack.Screen name="playlist/EditPlaylist" options={{ 
-                presentation: 'modal', headerShown: true,
+                presentation: 'modal', 
+                headerShown: false,
                 headerTitleStyle: { fontSize: 30 },
                 headerLeft: () => (
                   <BackButtonArrow />
@@ -167,7 +168,7 @@ function RootLayoutNav() {
                 title: 'Edit Playlist'
               }} />
               <Stack.Screen name="playlist/ViewPlaylist" options={{ 
-                presentation: 'modal', headerShown: true,
+                headerShown: false,
                 headerTitleStyle: { fontSize: 30 },
                 headerLeft: () => (
                   <BackButtonArrow />

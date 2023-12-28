@@ -16,7 +16,7 @@ import { AppDispatch, RootState } from '@/state/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocalStorage, setLocalStorage } from '@/constants/resources';
 import { playlistInterface } from '@/constants/modelTypes';
-import { initializeTemptPlaylist, setTemptPlaylistAction, setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
+import { initializeTemptPlaylist, setTemptPlaylistData } from '@/state/slices/temptDataSlice';
 import { deletePlaylist } from '@/state/slices/playlistSlice';
 
 
@@ -35,13 +35,14 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
     const [selectedBibleBook, setSelectedBibleBook] = useState('');
 
     const settings = useSelector((state: RootState) => state.settings);
-    const temptPlaylist = useSelector((state: RootState) => state.temptPlaylist);
+    const temptBibleVerse = useSelector((state: RootState) => state.temptData.temptBibleVerse);
+    const temptPlaylist = useSelector((state: RootState) => state.temptData.temptPlaylist);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        setSharedText(`${ temptPlaylist.text } \n\n---${ temptPlaylist.book_name } ${ temptPlaylist.chapter }:${ temptPlaylist.verse } \nBible Alert`);
-        setSelectedBibleBook(`${ temptPlaylist.book_name } ${ temptPlaylist.chapter }:${ temptPlaylist.verse }`);
-    }, [temptPlaylist]);
+        setSharedText(`${ temptBibleVerse.text } \n\n---${ temptBibleVerse.book_name } ${ temptBibleVerse.chapter }:${ temptBibleVerse.verse } \nBible Alert`);
+        setSelectedBibleBook(`${ temptBibleVerse.book_name } ${ temptBibleVerse.chapter }:${ temptBibleVerse.verse }`);
+    }, [temptBibleVerse]);
     
     const onShare = async () => {
         try {
@@ -101,7 +102,7 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
     };
 
     const onClickPlay = () => {
-        dispatch(setTemptPlaylistData({ ...temptPlaylist, action: "Play" }));
+        dispatch(setTemptPlaylistData(temptPlaylist));
         navigation.navigate('PlaylistView');
         dismiss();
     }
@@ -109,7 +110,7 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
     const onClickDelete = () => {
         dispatch(deletePlaylist(temptPlaylist));
         
-        const msg = `${ temptPlaylist.book_name } ${ temptPlaylist.chapter }:${ temptPlaylist.verse } removed from playlist`;
+        const msg = `${ temptBibleVerse.book_name } ${ temptBibleVerse.chapter }:${ temptBibleVerse.verse } removed from playlist`;
         let toast = Toast.show(msg, {
             duration: Toast.durations.LONG,
             // position: Toast.positions.BOTTOM,
@@ -124,7 +125,7 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
     }
     
     const onClickEdit = () => {
-        dispatch(setTemptPlaylistData({ ...temptPlaylist, action: "Edit" }));
+        dispatch(setTemptPlaylistData(temptPlaylist));
         navigation.navigate('PlaylistEdit');
         dismiss();
     }
@@ -167,7 +168,7 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
             backdropComponent={renderBackdrop}
         >
             <View style={{ paddingHorizontal: 5 }}>
-                <Text style={[styles.titleText, themeStyles.textColor]}>{selectedBibleBook}</Text>
+                {/* <Text style={[styles.titleText, themeStyles.textColor]}>{selectedBibleBook}</Text> */}
 
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => onClickPlay()}>
                     <FontAwesome5 style={[styles.swiperIcon, themeStyles.iconColor]} name="play" size={24} />

@@ -31,3 +31,16 @@ export type settingsInterface = {
     colorTheme: "dark" | "light",
     searchResultLimit: number,
 };
+
+
+export type _Playlists_ = {
+    title: string,
+    description?: string,
+    schedule?: {
+        intervals: string,
+        startDate: string,
+        endDate: string
+    },
+    lastPlayed?: bibleInterface,
+    lists: bibleInterface[],
+};

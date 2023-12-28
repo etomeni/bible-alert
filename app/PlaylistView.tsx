@@ -22,7 +22,7 @@ export default function PlaylistView() {
     const navigation: any = useNavigation();
     const [selectedBibleChapter, setSelectedBibleChapter] = useState<playlistInterface[]>([]);
     const settings = useSelector((state: RootState) => state.settings);
-    const temptPlaylist = useSelector((state: RootState) => state.temptPlaylist);
+    const temptBibleVerse = useSelector((state: RootState) => state.temptData.temptBibleVerse);
     const [displayBibleVerse, setDisplayBibleVerse] = useState<playlistInterface>({
         book: 0,
         book_name: '',
@@ -35,13 +35,13 @@ export default function PlaylistView() {
 
     useEffect(() => {
         // getEnglishVoicesAsync().then(res => console.log(res));
-        // setDisplayBibleVerse(temptPlaylist);
+        // setDisplayBibleVerse(temptBibleVerse);
 
-        const Bible: any = temptPlaylist.book > 39 ? bibleKJV.new : bibleKJV.old;
+        const Bible: any = temptBibleVerse.book > 39 ? bibleKJV.new : bibleKJV.old;
         const _selected = getBibleBookVerses(
             Bible,
-            temptPlaylist.book_name,
-            temptPlaylist.chapter,
+            temptBibleVerse.book_name,
+            temptBibleVerse.chapter,
         );
          
         setSelectedBibleChapter(_selected.bible);
@@ -176,7 +176,7 @@ export default function PlaylistView() {
 
             <View style={[styles.header, themeStyles.contentBg]}>
                 <Text style={[styles.headerText, themeStyles.textColor]}>
-                    { `${temptPlaylist.book_name} ${temptPlaylist.chapter}` }
+                    { `${temptBibleVerse.book_name} ${temptBibleVerse.chapter}` }
                 </Text>
 
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -186,13 +186,13 @@ export default function PlaylistView() {
 
             <View style={styles.playlistTitle}>
                 <Text style={[styles.playlistTitleText, themeStyles.titleText]}>
-                    { temptPlaylist.title }
+                    { temptBibleVerse.title }
                 </Text>
             </View>
 
             <ScrollView style={[styles.playlistNote, themeStyles.contentBg]}>
                 <Text style={[styles.playlistNoteText, themeStyles.text]}>
-                    { temptPlaylist.note }
+                    { temptBibleVerse.note }
                 </Text>
             </ScrollView>
 

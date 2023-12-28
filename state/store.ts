@@ -3,9 +3,10 @@ import bibleVerseSlice from './slices/bibleVerseSlice';
 import bibleSelectionSlice from './slices/bibleSelectionSlice';
 import selectedBibleSlice from './slices/selectedBibleVerseModalSlice';
 import bookmarkSlice from './slices/bookmarkSlice';
-import temptPlaylistSlice from './slices/temptPlaylistSlice';
+// import temptPlaylistSlice from './slices/temptPlaylistSlice';
 import settingsSlice from './slices/settingsSlice';
 import playlistSlice from './slices/playlistSlice';
+import temptDataSlice from './slices/temptDataSlice';
 
 
 export const store = configureStore({
@@ -14,7 +15,8 @@ export const store = configureStore({
         selectedBibleBook: bibleSelectionSlice,
         biblVerse: selectedBibleSlice,
         bookmark: bookmarkSlice,
-        temptPlaylist: temptPlaylistSlice,
+        // temptPlaylist: temptPlaylistSlice,
+        temptData: temptDataSlice,
         settings: settingsSlice,
         playlists: playlistSlice
     }

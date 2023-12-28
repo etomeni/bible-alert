@@ -12,9 +12,9 @@ import { playlistInterface } from '@/constants/modelTypes';
 import { getLocalStorage, setLocalStorage } from '@/constants/resources';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
-import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
+import { setTemptPlaylistData, setTemptBibleVerseData } from '@/state/slices/temptDataSlice';
 import { StatusBar } from 'expo-status-bar';
-import { addToPlaylists } from '@/state/slices/playlistSlice';
+// import { addToPlaylists } from '@/state/slices/playlistSlice';
 
 
 export default function PlaylistEdit() {
@@ -25,7 +25,7 @@ export default function PlaylistEdit() {
     const [playlistTitleError, setPlaylistTitleError] = useState(false);
     const settings = useSelector((state: RootState) => state.settings);
 
-    const temptPlaylist = useSelector((state: RootState) => state.temptPlaylist);
+    const temptBibleVerse = useSelector((state: RootState) => state.temptData.temptBibleVerse);
     const playlists = useSelector((state: RootState) => state.playlists);
     const dispatch = useDispatch<AppDispatch>();
 
@@ -33,9 +33,9 @@ export default function PlaylistEdit() {
     useEffect(() => {
         for (const playlist of playlists) {
             if (
-                playlist.book == temptPlaylist.book &&  
-                playlist.chapter == temptPlaylist.chapter && 
-                playlist.verse == temptPlaylist.verse
+                playlist.book == temptBibleVerse.book &&  
+                playlist.chapter == temptBibleVerse.chapter && 
+                playlist.verse == temptBibleVerse.verse
             ) {
                 setPlaylistTitle(playlist.title || '');
                 setPlaylistNote(playlist.note || '');
@@ -46,11 +46,11 @@ export default function PlaylistEdit() {
     }, []);
 
     useEffect(() => {
-        if (temptPlaylist.action === "Edit") {
-            setPlaylistTitle(temptPlaylist.title || '');
-            setPlaylistNote(temptPlaylist.note || '');
+        if (temptBibleVerse.action === "Edit") {
+            setPlaylistTitle(temptBibleVerse.title || '');
+            setPlaylistNote(temptBibleVerse.note || '');
         }
-    }, [temptPlaylist]);
+    }, [temptBibleVerse]);
 
     useEffect(() => {
         if (playlistTitle && playlistTitleError) {
@@ -60,7 +60,7 @@ export default function PlaylistEdit() {
     
     const submitPlaylist = () => {
         const newPlaylist: playlistInterface = {
-            ...temptPlaylist,
+            ...temptBibleVerse,
             title: playlistTitle,
             note: playlistNote,
         };
@@ -167,7 +167,7 @@ export default function PlaylistEdit() {
 
             <View style={styles.playlistBook}>
                 <Text style={[styles.headerText, themeStyles.textColor]}>
-                    { `${temptPlaylist.book_name} ${temptPlaylist.chapter}:${temptPlaylist.verse}` }
+                    { `${temptBibleVerse.book_name} ${temptBibleVerse.chapter}:${temptBibleVerse.verse}` }
                 </Text>
             </View>
 

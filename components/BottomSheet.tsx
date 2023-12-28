@@ -15,8 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { saveBookmark } from '@/state/slices/bookmarkSlice';
 import { getLocalStorage, setLocalStorage } from '@/constants/resources';
 import { bibleInterface, playlistInterface } from '@/constants/modelTypes';
-import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
 import { useNavigation } from 'expo-router';
+import { setTemptBibleVerseData } from '@/state/slices/temptDataSlice';
 
 
 export type Ref = BottomSheetModal;
@@ -26,6 +26,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
     const [selectedBibleBook, setSelectedBibleBook] = useState('');
     const settings = useSelector((state: RootState) => state.settings);
     const s_BibleVerse = useSelector((state: RootState) => state.biblVerse);
+    const playlists = useSelector((state: RootState) => state.playlists);
     const dispatch = useDispatch<AppDispatch>();
     
     // const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
@@ -131,10 +132,15 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
     const addToPlaylist = () => {
         const _bible: playlistInterface = s_BibleVerse[0];
         
-        dispatch(setTemptPlaylistData(_bible));
+        dispatch(setTemptBibleVerseData(_bible));
         dismiss();
 
-        navigation.navigate('playlist/AddToPlaylist');
+        if (playlists.length) {
+            navigation.navigate('playlist/AddToPlaylist');
+        } else {
+            navigation.navigate('playlist/CreateNewPlaylist');
+        }
+
         // navigation.navigate('PlaylistEdit');
     };
 
@@ -156,37 +162,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
             {
                 rate: 0.8,
                 pitch: 0.6,
-                
                 // voice: 'com.apple.ttsbundle.Moira-compact'
-                // onDone: hello(),
-                // onStart: hello(),
-                // onStopped: () => hello(),
-                // onBoundary: hello
-                // onDone: () => {
-                //     console.log("Hello");
-                    
-                //     // const lastIndex = playlists.length - 1;
-                //     // const currentIndex = playlists.findIndex(item => item.book === displayVerse.book || item.chapter === displayVerse.chapter || item.verse === displayVerse.verse);
-                //     // if (lastIndex != currentIndex) {
-                //     //     setDisplayVerse(playlists[currentIndex + 1]);
-                //     // }
-                //     setDisplayVerse(playlists[playingIndex + 1]);
-                // },
-                // onStopped: () => {
-                //     console.log("Hello");
-                //     setDisplayVerse(playlists[playingIndex + 1]);
-                // },
-                // onStart: () => {
-                //     console.log("Hello");
-                //     setDisplayVerse(playlists[playingIndex + 1]);
-                // },
-                // onBoundary: (boundaries: any) => {
-                //     const { charIndex, charLength } = boundaries;
-                //     console.log(charIndex);
-                //     setDisplayVerse(playlists[playingIndex + 1]);
-                //     console.log("Hello");
-
-                // }
             }
         );
 

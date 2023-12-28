@@ -10,14 +10,15 @@ import Colors from '../../constants/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import { useEffect, useRef, useState } from 'react';
-import { playlistInterface } from '@/constants/modelTypes';
+import { _Playlists_, playlistInterface } from '@/constants/modelTypes';
 import PlaylistOptionsBottomSheet from '@/components/PlaylistOptionsBottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
+// import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
 import Toast from 'react-native-root-toast';
 import { useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { deletePlaylist } from '@/state/slices/playlistSlice';
+import { setTemptPlaylistData } from '@/state/slices/temptDataSlice';
 
 
 export default function PlaylistScreen() {
@@ -25,7 +26,7 @@ export default function PlaylistScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const _reduxPlaylists = useSelector((state: RootState) => state.playlists);
 
-  const [playlists, setPlaylist] = useState<playlistInterface[]>(_reduxPlaylists);
+  const [playlists, setPlaylist] = useState<_Playlists_[]>(_reduxPlaylists);
   const settings = useSelector((state: RootState) => state.settings);
 
   useEffect(() => {
@@ -34,24 +35,23 @@ export default function PlaylistScreen() {
   
   
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const onClickPlaylistOptions = (_bible: playlistInterface) => {
+  const onClickPlaylistOptions = (_bible: _Playlists_) => {
     dispatch(setTemptPlaylistData(_bible));
     bottomSheetRef.current?.present();
   }
 
-  const onClickPlay = (item: playlistInterface) => {
-    dispatch(setTemptPlaylistData({ ...item, action: "Play" }));
-    navigation.navigate('PlaylistView');
+  const onClickPlay = (item: _Playlists_) => {
+    dispatch(setTemptPlaylistData(item));
+    navigation.navigate('playlist/ViewPlaylist');
 
     // dispatch(setTemptPlaylistData({ ...item, action: "Play" }));
     // navigation.navigate('PlaylistView');
-
   }
 
-  const onClickDelete = (pItem: playlistInterface) => {
+  const onClickDelete = (pItem: _Playlists_) => {
     dispatch(deletePlaylist(pItem));
     
-    const msg = `${ pItem.book_name } ${ pItem.chapter }:${ pItem.verse } removed from playlist`;
+    const msg = `${ pItem.title } removed from playlist`;
     let toast = Toast.show(msg, {
       duration: Toast.durations.LONG,
       // position: Toast.positions.BOTTOM,
@@ -62,9 +62,9 @@ export default function PlaylistScreen() {
     });
   }
 
-  const onClickEdit = (item: playlistInterface) => {
-    dispatch(setTemptPlaylistData({ ...item, action: "Edit" }));
-    navigation.navigate('PlaylistEdit');
+  const onClickEdit = (item: _Playlists_) => {
+    dispatch(setTemptPlaylistData(item));
+    navigation.navigate('playlist/EditPlaylist');
   }
 
   const themeStyles = StyleSheet.create({
@@ -92,7 +92,7 @@ export default function PlaylistScreen() {
     }
   });
 
-  const RightSwipeActions = ({ item }: {item: playlistInterface}) => {
+  const RightSwipeActions = ({ item }: {item: _Playlists_}) => {
     return (
       <View
         style={{
@@ -133,10 +133,9 @@ export default function PlaylistScreen() {
                   <TouchableOpacity style={{flexGrow: 1}} onPress={() => onClickPlay(item)}>
                     <View style={{paddingVertical: 10}}>
                       <Text style={[styles.listTextContainer, themeStyles.text]}>{ item.title }</Text>
-                      <Text style={{color: 'gray', fontSize: 18}}>0 Verse</Text>
-                      {
-                        // `\n --${item.book_name} ${item.chapter}:${item.verse}`
-                      }
+                      <Text style={{color: 'gray', fontSize: 18}}>
+                        {`${item.lists.length} Verse${item.lists.length > 1 ? 's' : ''}`}
+                      </Text>
                     </View>
                   </TouchableOpacity>
 
@@ -149,7 +148,7 @@ export default function PlaylistScreen() {
               </Swipeable>
             </View>
           )}
-          keyExtractor={item => `${item.book}${item.chapter}${item.verse}`}
+          keyExtractor={(item, index) => `${index}`}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Image source={require('@/assets/images/empty.png')} style={{ width: 350, height: 350 }} />
