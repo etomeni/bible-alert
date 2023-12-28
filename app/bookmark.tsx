@@ -27,22 +27,15 @@ export default function bookmark() {
     const navigation: any = useNavigation();
 
     const dispatch = useDispatch<AppDispatch>();
-    const [bookmark, setBookmark] = useState<bibleInterface[]>([]);
+    const _book_mark_ = useSelector((state: RootState) => state.bookmark);
     const settings = useSelector((state: RootState) => state.settings);
+    const [bookmark, setBookmark] = useState<bibleInterface[]>(_book_mark_);
     
-
+    
     useEffect(() => {
-        getLocalStorage("bookmark").then(
-            (res: any) => {
-                if (res) {
-                    setBookmark(res);
-                    // dispatch(saveBookmark(res));
-                    // dispatch(deleteAllBookmark(res));
-                }
-            }
-        )
-    }, []);
-
+        setBookmark(_book_mark_);
+    }, [_book_mark_]);
+    
     const onClickBookmark = (item: bibleInterface) => {
 
         dispatch(selectedBibleBook({

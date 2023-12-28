@@ -125,22 +125,11 @@ function RootLayoutNav() {
                 headerShown: true, title: "Bookmarks",
                 headerTitleStyle: { fontSize: 30 },
                 // headerBackVisible: false
-              }} />
-              {/* <Stack.Screen name="PlaylistView" options={{ 
-                presentation: 'modal', headerShown: false ,
-                headerTitleStyle: { fontSize: 30 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
               }} />
-              <Stack.Screen name="PlaylistEdit" options={{ 
-                presentation: 'modal', headerShown: false,
-                headerTitleStyle: { fontSize: 30 },
-                headerLeft: () => (
-                  <BackButtonArrow />
-                ),
-              }} /> */}
-
+              
               <Stack.Screen name="playlist/CreateNewPlaylist" options={{ 
                 presentation: 'modal', headerShown: true,
                 headerTitleStyle: { fontSize: 30 },

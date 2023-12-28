@@ -2,30 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Voice, getAvailableVoicesAsync } from 'expo-speech';
 import { bibleInterface } from './modelTypes';
 
-import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/state/store';
-import Colors from './Colors';
-
-
-export const themeStyles = () => {
-    const settings = useSelector((state: RootState) => state.settings);
-
-    const _themeStyles = StyleSheet.create({
-        text: {
-        //   marginBottom: 16,
-          textAlign: 'justify',
-          color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-          fontSize: settings.fontSize
-        },
-        background: {
-            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.background : Colors.light.background
-        }
-    });
-
-    return _themeStyles;
-}
-
 
 export function getBibleBookVerses(bible: bibleInterface[], bookName: string, chapter: number) {
     const _books: bibleInterface[] = bible.filter((book: bibleInterface) => book.book_name === bookName && book.chapter == chapter);
@@ -54,8 +30,6 @@ export async function getEnglishVoicesAsync() {
     const noVoice: Voice[] = [];
     return noVoice;
 }  
-
-
 
 // remove Special Characters And Replace Spaces
 export function sanitizedString(text: string) {

@@ -147,38 +147,6 @@ export default function TabLayout() {
           title: 'Playlists',
           tabBarIcon: ({ color }) => <MaterialIcons name="playlist-play" size={24} color={color} />,
           headerTitleStyle: { fontSize: 30 },
-          headerRight: () => (
-            <SafeAreaView style={{
-              flexDirection: 'row'
-            }}>
-
-              {/* <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <Ionicons
-                      name="search"
-                      size={25}
-                      // color={themeStyles.iconColor}
-                      style={[{ marginRight: 15, opacity: pressed ? 0.5 : 1 }, themeStyles.iconColor]}
-                    />
-                  )}
-                </Pressable>
-              </Link>
-
-              <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <AntDesign
-                      name="setting"
-                      size={25}
-                      color={Colors[colorScheme ?? 'light'].text}
-                      style={[{ marginRight: 15, opacity: pressed ? 0.5 : 1 }, themeStyles.iconColor]}
-                    />
-                  )}
-                </Pressable>
-              </Link> */}
-            </SafeAreaView>
-          )
         }}
       />
       <Tabs.Screen

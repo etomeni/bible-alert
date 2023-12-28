@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView,
+import { View, Text, StyleSheet,
     TouchableOpacity, Share
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard';
@@ -13,8 +13,7 @@ import Colors from '@/constants/Colors';
 import { AppDispatch, RootState } from '@/state/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveBookmark } from '@/state/slices/bookmarkSlice';
-import { getLocalStorage, setLocalStorage } from '@/constants/resources';
-import { bibleInterface, playlistInterface } from '@/constants/modelTypes';
+import { bibleInterface } from '@/constants/modelTypes';
 import { useNavigation } from 'expo-router';
 import { setTemptBibleVerseData } from '@/state/slices/temptDataSlice';
 
@@ -104,17 +103,19 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
 
     const addToBookmark = () => {
         const _bible = s_BibleVerse[0];
-        getLocalStorage("bookmark").then(
-            (res: any) => {
-                // console.log(res);
-                const state: bibleInterface[] = res ? res : [];
-                const isUnique = state.every(item => item.book !== _bible.book || item.chapter !== _bible.chapter || item.verse !== _bible.verse);
-                if (isUnique) {
-                    state.unshift(_bible);
-                    setLocalStorage("bookmark", state);
-                }
-            }
-        );
+        dispatch(saveBookmark(_bible));
+
+        // getLocalStorage("bookmark").then(
+        //     (res: any) => {
+        //         // console.log(res);
+        //         const state: bibleInterface[] = res ? res : [];
+        //         const isUnique = state.every(item => item.book !== _bible.book || item.chapter !== _bible.chapter || item.verse !== _bible.verse);
+        //         if (isUnique) {
+        //             state.unshift(_bible);
+        //             setLocalStorage("bookmark", state);
+        //         }
+        //     }
+        // );
 
         const msg = `${ _bible.book_name } ${ _bible.chapter }:${ _bible.verse } bookmarked`;
         let toast = Toast.show(msg, {
@@ -130,7 +131,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
     };
 
     const addToPlaylist = () => {
-        const _bible: playlistInterface = s_BibleVerse[0];
+        const _bible: bibleInterface = s_BibleVerse[0];
         
         dispatch(setTemptBibleVerseData(_bible));
         dismiss();
