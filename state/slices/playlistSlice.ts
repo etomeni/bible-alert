@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { _Playlists_, bibleInterface } from "@/constants/modelTypes";
+import { _Playlists_, _schedule_, bibleInterface } from "@/constants/modelTypes";
 import { setLocalStorage } from "@/constants/resources";
 
 const initialState: _Playlists_[] = [];
@@ -12,6 +12,10 @@ type _editPlaylistInterface_ = {
     oldTitle: string,
     newTitle: string,
     description: string,
+}
+type _schedulePlaylistInterface_ = {
+    title: string,
+    schedule: _schedule_,
 }
 
 const playlistSlice = createSlice({
@@ -35,6 +39,19 @@ const playlistSlice = createSlice({
             if (indexOfObject !== -1) {
                 state[indexOfObject].title = action.payload.newTitle;
                 state[indexOfObject].description = action.payload.description;
+
+                setLocalStorage("playlists", state);
+                return state;
+            }
+
+            return state;
+        },
+        schedulePlaylist: (state, action: PayloadAction<_schedulePlaylistInterface_>) => {
+            // console.log(action.payload);
+            const indexOfObject = state.findIndex(obj => obj.title == action.payload.title);
+            if (indexOfObject !== -1) {
+                state[indexOfObject].schedule = action.payload.schedule;
+                // state[indexOfObject].description = action.payload.description;
 
                 setLocalStorage("playlists", state);
                 return state;
@@ -106,5 +123,5 @@ const playlistSlice = createSlice({
     }
 });
 
-export const { createNewPlaylist, editPlaylist, addToPlaylist, removeFromPlaylist, restorePlaylists, initializePlaylists, deletePlaylist } = playlistSlice.actions;
+export const { createNewPlaylist, editPlaylist, addToPlaylist, removeFromPlaylist, restorePlaylists, schedulePlaylist, initializePlaylists, deletePlaylist } = playlistSlice.actions;
 export default playlistSlice.reducer;

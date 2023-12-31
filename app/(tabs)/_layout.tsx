@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, Text, View, useColorScheme, 
-  StyleSheet, SafeAreaView, TextInput, TouchableOpacity 
+import { Pressable, Text, View, 
+  StyleSheet, SafeAreaView
 } from 'react-native';
 
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -20,7 +20,6 @@ import { restorePlaylists } from '@/state/slices/playlistSlice';
 
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
   const settings = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch<AppDispatch>();

@@ -10,7 +10,7 @@ import Colors from '../../constants/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import { useEffect, useRef, useState } from 'react';
-import { _Playlists_, playlistInterface } from '@/constants/modelTypes';
+import { _Playlists_ } from '@/constants/modelTypes';
 import PlaylistOptionsBottomSheet from '@/components/PlaylistOptionsBottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 // import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';

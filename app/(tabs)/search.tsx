@@ -226,8 +226,8 @@ export default function SearchScreen() {
 
   
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
+    <SafeAreaView>
+      <StatusBar style={'auto'} backgroundColor={Colors.primary} />
 
       <View style={[styles.inputContainer, themeStyles.inputContainer]}>
         <TextInput

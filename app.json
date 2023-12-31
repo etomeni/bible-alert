@@ -1,12 +1,17 @@
 {
   "expo": {
-    "name": "bible-alert",
-    "slug": "bible-alert",
+    "name": "Bible Alert",
+    "slug": "Bible Alert",
+    "description": "",
     "version": "1.0.0",
     "orientation": "portrait",
+    "primaryColor": "#375b62",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "notification": {
+      "iosDisplayInForeground": true
+    },
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -16,13 +21,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biblealert.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.biblealert.app",
+      "versionCode": 1,
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.biblealert.app"
     },
     "web": {
       "bundler": "metro",
@@ -30,7 +39,22 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#375b62",
+          "sounds": [
+            "./assets/sounds/urgent_simple.wav",
+            "./assets/sounds/notification_9.mp3",
+            "./assets/sounds/positive_new_level.mp3",
+            "./assets/sounds/S_Incoming_call.mp3",
+            "./assets/sounds/S_Whoa.mp3",
+            "./assets/sounds/S_Wow.mp3"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

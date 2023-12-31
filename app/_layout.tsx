@@ -1,11 +1,13 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack, useNavigation } from 'expo-router';
+import { SplashScreen, Stack, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useColorScheme, Text, TouchableOpacity} from 'react-native';
+// import { useColorScheme, Text, TouchableOpacity} from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
+
+// import { Ionicons } from '@expo/vector-icons';
 
 import { store } from './../state/store';
 import { Provider } from 'react-redux';
@@ -15,8 +17,8 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 import { EventRegister } from 'react-native-event-listeners'
 
 import { LogBox } from 'react-native';
-import { getLocalStorage } from '@/constants/resources';
-import { settingsInterface } from '@/constants/modelTypes';
+import { getLocalStorage, setLocalStorage } from '@/constants/resources';
+import { _Playlists_, bibleInterface, scheduleInterface, settingsInterface } from '@/constants/modelTypes';
 import BackButtonArrow from '@/components/BackButtonArrow';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 // LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -58,10 +60,62 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+
+function handleNotificationNavigations() {
+  useEffect(() => {
+    let isMounted = true;
+
+    function redirect(notification: Notifications.Notification) {
+      // const url = notification.request.content.data?.url;
+      const notificationPlaylist: _Playlists_ = notification.request.content.data.playlist;
+      const notificationBibleVerse: bibleInterface = notification.request.content.data.bibleVerse;
+      const notificationSchedule: scheduleInterface = notification.request.content.data.schedule;
+
+      // setLocalStorage("notificationData", {
+      //   notificationPlaylist,
+      //   notificationBibleVerse,
+      //   notificationSchedule
+      // });
+
+      // if (url) {
+      //   router.push(url);
+      // }
+
+      // const bibleVerse: bibleInterface = notification.request.content.data?.bibleVerse;
+      // if (bibleVerse.book) {
+      //   router.push("/notify");
+      //   // router.push("/playlist/ViewPlaylist");
+      //   // router.setParams({});
+      // }
+
+      router.push("/playlist/ViewNotificationPlaylist");
+    }
+
+    Notifications.getLastNotificationResponseAsync()
+      .then(response => {
+        if (!isMounted || !response?.notification) {
+          return;
+        }
+        redirect(response?.notification);
+      });
+
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      redirect(response.notification);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, []);
+}
+
 function RootLayoutNav() {
   // const colorScheme = useColorScheme();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [isDark, setIsDark] = useState<boolean>(true);
+
+  handleNotificationNavigations();
 
   useEffect(() => {
     getLocalStorage("settings").then((res: settingsInterface) => {
@@ -163,6 +217,24 @@ function RootLayoutNav() {
                   <BackButtonArrow />
                 ),
                 title: 'Playlist'
+              }} />
+
+              <Stack.Screen name="playlist/ViewNotificationPlaylist" options={{ 
+                headerShown: false,
+                headerTitleStyle: { fontSize: 30 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Notifications'
+              }} />
+
+              <Stack.Screen name="notify" options={{ 
+                headerShown: false,
+                headerTitleStyle: { fontSize: 30 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Test Notifications'
               }} />
             </Stack>
           </ThemeProvider>

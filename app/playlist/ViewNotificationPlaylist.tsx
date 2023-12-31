@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity,
-  FlatList, Image, Share, ScrollView, Switch
+  FlatList, Image, Share, ScrollView
 } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import * as Clipboard from 'expo-clipboard';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, router } from 'expo-router';
+import { useNavigation } from "expo-router";
 import * as Speech from 'expo-speech';
+import * as Notifications from 'expo-notifications';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import Colors from '@/constants/Colors';
 import BackButtonArrow from '@/components/BackButtonArrow';
-import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
+import { _Playlists_, bibleInterface, scheduleInterface } from '@/constants/modelTypes';
 import { selectedBibleBook, selectedChapter, selectedVerse } from '@/state/slices/bibleSelectionSlice';
 import { getBibleBookVerses } from '@/constants/resources';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
@@ -23,18 +24,29 @@ import bible_KJV from "@/assets/bible/kjvTS";
 import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
 import ScheduleAlert from '@/components/ScheduleAlert';
+import Loading from '@/components/Loading';
+import { scheduleNextNotification } from '@/constants/notifications';
 
 
 export default function ViewPlaylist() {
   const navigation: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const settings = useSelector((state: RootState) => state.settings);
-  const temptPlaylist = useSelector((state: RootState) => state.temptData.temptPlaylist);
-  const [playlists, setPlaylists] = useState(temptPlaylist);
+  // const temptPlaylist = useSelector((state: RootState) => state.temptData.temptPlaylist);
+  const allPlaylist_ = useSelector((state: RootState) => state.playlists);
+
+  const [playlists, setPlaylists] = useState<_Playlists_>();
 
   const [playingIndex, setPlayingIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [playingEnded, setPlayingEnded] = useState<boolean>(true);
+  // const [playingEnded, setPlayingEnded] = useState<boolean>(true);
+  const [highlightedVerse, setHighlightedVerse] = useState<bibleInterface>({
+    book_name: '',
+    book: 0,
+    chapter: 0,
+    verse: 0,
+    text: '',
+  });
 
   const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
   const renderBackdrop = useCallback((props: any) => 
@@ -44,16 +56,65 @@ export default function ViewPlaylist() {
   const playlistInfoRef = useRef<BottomSheetModal>(null);
   const schedulePlaylistRef = useRef<BottomSheetModal>(null);
 
-
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
-    setPlaylists(temptPlaylist);
-  }, [temptPlaylist]);
+    if (
+      lastNotificationResponse &&
+      lastNotificationResponse.notification.request.content.data.playlist
+      // lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      // console.log("lastNotificationResponse");
 
-  useEffect(() => {
-    if (!playingEnded) {
-      onClickPlay();
+      const notificationData = lastNotificationResponse.notification.request.content.data;
+
+      const notificationPlaylist: _Playlists_ = notificationData.playlist;
+      const notificationBibleVerse: bibleInterface = notificationData.bibleVerse;
+      const notificationSchedule: scheduleInterface = notificationData.schedule;
+
+      setPlaylists(notificationPlaylist);
+      setHighlightedVerse(notificationBibleVerse);
+
+      scheduleNextNotification(
+        allPlaylist_,
+        notificationPlaylist,
+        notificationBibleVerse,
+        notificationSchedule
+      );
+      
+      setTimeout(() => {
+        _play_(highlightedVerse);
+      }, 500);
     }
-  }, [playingIndex]);
+  }, [lastNotificationResponse]);
+  
+
+  const _play_ = (highlightedVerse: bibleInterface) => {
+    
+    let thingToSayStarting = '';
+    const thingToSayEnding = `${highlightedVerse.chapter + " vs " + highlightedVerse.verse + " - " + highlightedVerse.text}`;
+    if (highlightedVerse.book_name[0] == '1') {
+      thingToSayStarting = "1st " + highlightedVerse.book_name.slice(1);
+    } else if(highlightedVerse.book_name[0] == '2') {
+      thingToSayStarting = "2nd " + highlightedVerse.book_name.slice(1);
+    } else {
+      thingToSayStarting = highlightedVerse.book_name;
+    }
+
+    const thingToSay = `${thingToSayStarting + " " + thingToSayEnding}`;
+
+    Speech.speak(
+      thingToSay,
+      {
+        rate: 0.8,
+        pitch: 0.6,
+        // voice: 'com.apple.ttsbundle.Moira-compact'
+        onDone: () => onSpeakingEnd(),
+        onStart: () => onSpeakingStart(),
+        onStopped: () => onClickPause(),
+      }
+    );
+    setIsPlaying(true);
+  }
 
   const onClickPlaylist_Item = (item: bibleInterface) => {
     dispatch(selectedBibleBook({
@@ -76,6 +137,8 @@ export default function ViewPlaylist() {
   }
 
   const onDeletePlaylist = () => {
+    if (!playlists) return;
+
     dispatch(deletePlaylist(playlists));
     
     const msg = `${ playlists.title } deleted from playlist`;
@@ -92,6 +155,8 @@ export default function ViewPlaylist() {
   }
 
   const onDeletePlaylist_Item = (item: bibleInterface) => {
+    if (!playlists) return;
+
     dispatch(removeFromPlaylist({
       title: playlists.title,
       bibleVerse: item
@@ -150,18 +215,18 @@ export default function ViewPlaylist() {
   }
 
   const onCopyPlaylist_Item = async (item: bibleInterface) => {
-      const sharedText = `${ item.text } \n\n---${ item.book_name } ${ item.chapter }:${ item.verse } \nBible Alert`;
-      await Clipboard.setStringAsync(sharedText);
+    const sharedText = `${ item.text } \n\n---${ item.book_name } ${ item.chapter }:${ item.verse } \nBible Alert`;
+    await Clipboard.setStringAsync(sharedText);
 
-      const msg = `copied to clipboard!`;
-      let toast = Toast.show(msg, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0,
-      });
+    const msg = `copied to clipboard!`;
+    let toast = Toast.show(msg, {
+      duration: Toast.durations.LONG,
+      position: Toast.positions.BOTTOM,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
+    });
   }
 
 
@@ -169,10 +234,12 @@ export default function ViewPlaylist() {
 
 
   const onClickPlay = () => {
+    if (!playlists) return;
+
     const s_BibleVerse = playlists.lists[playingIndex];
 
     let thingToSayStarting = '';
-    const thingToSayEnding = `${s_BibleVerse.chapter + " vs" + s_BibleVerse.verse + " - " + s_BibleVerse.text}`;
+    const thingToSayEnding = `${s_BibleVerse.chapter + " vs " + s_BibleVerse.verse + " - " + s_BibleVerse.text}`;
     if (s_BibleVerse.book_name[0] == '1') {
       thingToSayStarting = "1st " + s_BibleVerse.book_name.slice(1);
     } else if(s_BibleVerse.book_name[0] == '2') {
@@ -189,7 +256,6 @@ export default function ViewPlaylist() {
         rate: 0.8,
         pitch: 0.6,
         // voice: 'com.apple.ttsbundle.Moira-compact'
-
         onDone: () => onSpeakingEnd(),
         onStart: () => onSpeakingStart(),
         onStopped: () => onClickPause(),
@@ -203,6 +269,8 @@ export default function ViewPlaylist() {
   }
 
   const onClickPrevious = () => {
+    if (!playlists) return;
+
     if (isPlaying) {
       Speech.stop();
     }
@@ -216,6 +284,8 @@ export default function ViewPlaylist() {
   }
 
   const onClickNext = () => {
+    if (!playlists) return;
+
     if (isPlaying) {
       Speech.stop();
     }
@@ -234,18 +304,19 @@ export default function ViewPlaylist() {
   const onSpeakingStart = () => {
     // console.log('on start speaking');
     setIsPlaying(true);
-    setPlayingEnded(false);
+    // setPlayingEnded(false);
   }
 
   const onSpeakingEnd = () => {
+    if (!playlists) return;
     // console.log('on end speaking');
     setIsPlaying(false);
     
-    if (playingIndex == playlists.lists.length - 1) {
-      setPlayingEnded(true);
+    if (playingIndex == playlists?.lists.length - 1) {
+      // setPlayingEnded(true);
       setPlayingIndex(0);
     } else {
-      onClickNext();
+      // onClickNext();
     }
   }
 
@@ -318,7 +389,7 @@ export default function ViewPlaylist() {
   };
   
 
-  const playlistInfoView = () => (
+  const playlistInfoView = (playlists:  _Playlists_) => (
     <View>
 
       <View style={[themeStyles.headerBackground, {marginBottom: 5}]}>
@@ -339,14 +410,6 @@ export default function ViewPlaylist() {
         </Text>
       </View>
 
-      {/* <View style={[themeStyles.headerBackground, {marginBottom: 5}]}>
-        <Text style={[themeStyles.text, styles.playlistInfoViewTitle]}>
-          Dated Created:
-        </Text>
-        <Text style={[themeStyles.text, styles.playlistInfoViewDetails]}>
-          {playlists.lists.length}
-        </Text>
-      </View> */}
 
       <View style={[themeStyles.headerBackground, {marginBottom: 5}]}>
         <Text style={[themeStyles.text, styles.playlistInfoViewTitle]}>
@@ -362,7 +425,7 @@ export default function ViewPlaylist() {
     </View>
   );
 
-  const schedulePlaylistView = () => (
+  const schedulePlaylistView = (playlists:  _Playlists_) => (
     <ScheduleAlert 
       settings={settings} 
       playlists={playlists} 
@@ -375,145 +438,173 @@ export default function ViewPlaylist() {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
-      <BottomSheetModal ref={playlistInfoRef} 
-        snapPoints={snapPoints} 
-        overDragResistanceFactor={0}
-        backgroundStyle={{
-          backgroundColor: themeStyles.BSbackground.backgroundColor,
-          borderRadius: 0
-        }}
-        handleIndicatorStyle={{ display: 'none' }}
-        backdropComponent={renderBackdrop}
-      >
-        { playlistInfoView() }
-      </BottomSheetModal>
-
-      <BottomSheetModal ref={schedulePlaylistRef} 
-        snapPoints={snapPoints} 
-        overDragResistanceFactor={0}
-        backgroundStyle={{
-          backgroundColor: themeStyles.BSbackground.backgroundColor,
-          borderRadius: 0
-        }}
-        handleIndicatorStyle={{ display: 'none' }}
-        backdropComponent={renderBackdrop}
-      >
-        { schedulePlaylistView() }
-      </BottomSheetModal>
-
-      <View style={[themeStyles.headerBackground, styles.headerContainer]}>
-        <BackButtonArrow />
-        <Text style={[themeStyles.textColor, styles.headerTitle]}>
-          {playlists.title}
-        </Text>
-        <TouchableOpacity onPress={()=> playlistInfoRef.current?.present()}>
-          <Ionicons name="information-circle-outline" size={30} style={themeStyles.iconColor} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={[styles.playlistOptions, themeStyles.border]}>
-        {
-          isPlaying ?
-            <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onClickPause()}>
-              <Ionicons name="pause" size={24} style={themeStyles.iconColor} />
-              <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Pause</Text>
-            </TouchableOpacity>
-
-          :
-            <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onClickPlay()}>
-              <Ionicons name="play" size={24} style={themeStyles.iconColor} />
-              <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Play</Text>
-            </TouchableOpacity>
-        }
-
-        <TouchableOpacity style={{alignItems: 'center'}} onPress={()=> schedulePlaylistRef.current?.present()}>
-          <Ionicons name="timer-outline" size={24} style={themeStyles.iconColor} />
-          <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Schedule</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={{alignItems: 'center'}} onPress={() => navigation.navigate('playlist/EditPlaylist')}>
-          <Ionicons name="settings-outline" size={24} style={themeStyles.iconColor} />
-          <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onDeletePlaylist()}>
-          <Ionicons name="close" size={24} style={themeStyles.iconColor} />
-          <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={{marginTop: 5}}>
-        <FlatList
-          data={playlists.lists}
-          // ref={flatListRef}
-          // initialScrollIndex={c_Index}
-          renderItem={({item}) => (
-            <TouchableOpacity style={{ ...themeStyles.contentBg, marginBottom: 5 }} onPress={() => onClickPlaylist_Item(item) }>
-                <Swipeable
-                    renderRightActions={() => <RightSwipeActions item={item} />}
-                >
-                    <View style={{padding: 16}} >
-                        <Text style={[styles.playlist_ItemTitle, themeStyles.playlist_ItemTitle]}>
-                            { item.book_name + " " + item.chapter + ":" + item.verse }
-                        </Text>
-                        <Text style={[styles.playlist_ItemVerse, themeStyles.playlist_ItemVerse]}>
-                            { item.text }
-                        </Text>
-                    </View>
-                </Swipeable>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => `${item.book}${item.chapter}${item.verse}`}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Image source={require('@/assets/images/empty.png')} style={{ width: 300, height: 300 }} />
-              <Text style={styles.emptySearchText}>You're yet to add verse(s) to this playlist!</Text>
-            </View>
-          }
-        />
-      </View>
-
-      <View style={[styles.playSection, themeStyles.playSection, {display: playingEnded ? 'none' : 'flex'}]}>
-        {/* <Text>1.0x</Text> */}
-        <View style={styles.playSectionIconContainer}>
-          <TouchableOpacity onPress={() => onClickPrevious()} disabled={playingIndex > 0 ? false : true}>
-            <Ionicons name="play-skip-back" size={24} 
-              style={[
-                themeStyles.iconColor, 
-                {color: playingIndex > 0 ? themeStyles.iconColor.color : 'gray'}
-              ]} 
-            />
-          </TouchableOpacity>
-
-            {
-              isPlaying ?
-                <TouchableOpacity style={styles.playPauseBTN} onPress={() => onClickPause()}>
-                  {/* <Ionicons name="play" size={24} color="#fff" /> */}
-                  <Ionicons name="pause" size={24} color="#fff" />
-                </TouchableOpacity>
-              :
-              <TouchableOpacity style={styles.playPauseBTN} onPress={() => onClickPlay()}>
-                <Ionicons name="play" size={24} color="#fff" />
-                {/* <Ionicons name="pause" size={24} color="#fff" /> */}
-              </TouchableOpacity>
-            }
-
-            <TouchableOpacity onPress={() => onClickNext()} 
-              disabled={playingIndex < playlists.lists.length - 1 ? false : true}
+      {
+        playlists ? (
+          <View style={{ flex: 1 }}>
+            <BottomSheetModal ref={playlistInfoRef} 
+              snapPoints={snapPoints} 
+              overDragResistanceFactor={0}
+              backgroundStyle={{
+                backgroundColor: themeStyles.BSbackground.backgroundColor,
+                borderRadius: 0
+              }}
+              handleIndicatorStyle={{ display: 'none' }}
+              backdropComponent={renderBackdrop}
             >
-              <Ionicons name="play-skip-forward" size={24}
-                style={[
-                  themeStyles.iconColor, 
-                  {color: playingIndex < playlists.lists.length - 1 ? themeStyles.iconColor.color : 'gray'}
-                ]}
-              />
-            </TouchableOpacity>
-        </View>
-      </View>
+              { playlistInfoView(playlists) }
+            </BottomSheetModal>
 
-      <TouchableOpacity onPress={() => {router.push("/playlist/ViewNotificationPlaylist");}}>
-        <Text style={{color: '#fff', fontSize: 20}}>open notification section</Text>
-      </TouchableOpacity>
+            <BottomSheetModal ref={schedulePlaylistRef} 
+              snapPoints={snapPoints} 
+              overDragResistanceFactor={0}
+              backgroundStyle={{
+                backgroundColor: themeStyles.BSbackground.backgroundColor,
+                borderRadius: 0
+              }}
+              handleIndicatorStyle={{ display: 'none' }}
+              backdropComponent={renderBackdrop}
+            >
+              { schedulePlaylistView(playlists) }
+            </BottomSheetModal>
+
+            <View style={[themeStyles.headerBackground, styles.headerContainer]}>
+              <BackButtonArrow />
+              <Text style={[themeStyles.textColor, styles.headerTitle]}>
+                {playlists.title}
+              </Text>
+              <TouchableOpacity onPress={()=> playlistInfoRef.current?.present()}>
+                <Ionicons name="information-circle-outline" size={30} style={themeStyles.iconColor} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={[styles.playlistOptions, themeStyles.border]}>
+              {
+                isPlaying ?
+                  <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onClickPause()}>
+                    <Ionicons name="pause" size={24} style={themeStyles.iconColor} />
+                    <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Pause</Text>
+                  </TouchableOpacity>
+
+                :
+                  <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onClickPlay()}>
+                    <Ionicons name="play" size={24} style={themeStyles.iconColor} />
+                    <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Play</Text>
+                  </TouchableOpacity>
+              }
+
+              <TouchableOpacity style={{alignItems: 'center'}} onPress={()=> schedulePlaylistRef.current?.present()}>
+                <Ionicons name="timer-outline" size={24} style={themeStyles.iconColor} />
+                <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Schedule</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={{alignItems: 'center'}} onPress={() => navigation.navigate('playlist/EditPlaylist')}>
+                <Ionicons name="settings-outline" size={24} style={themeStyles.iconColor} />
+                <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{alignItems: 'center'}} onPress={() => onDeletePlaylist()}>
+                <Ionicons name="close" size={24} style={themeStyles.iconColor} />
+                <Text style={[themeStyles.textColor, styles.playlistOptionText]}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{marginTop: 5}}>
+              <FlatList
+                data={playlists.lists}
+                // ref={flatListRef}
+                // initialScrollIndex={c_Index}
+                renderItem={({item}) => (
+                  <TouchableOpacity style={{ ...themeStyles.contentBg, marginBottom: 5 }} onPress={() => onClickPlaylist_Item(item) }>
+                      <Swipeable
+                        renderRightActions={() => <RightSwipeActions item={item} />}
+                      >
+                        <View style={{padding: 16}} >
+                          <Text style={[styles.playlist_ItemTitle, themeStyles.playlist_ItemTitle]}>
+                            { item.book_name + " " + item.chapter + ":" + item.verse }
+                          </Text>
+                          <Text style={[styles.playlist_ItemVerse, themeStyles.playlist_ItemVerse]}>
+                            { item.text }
+                          </Text>
+                        </View>
+                      </Swipeable>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={item => `${item.book}${item.chapter}${item.verse}`}
+                ListEmptyComponent={
+                  <View style={styles.emptyContainer}>
+                    <Image source={require('@/assets/images/empty.png')} style={{ width: 300, height: 300 }} />
+                    <Text style={styles.emptySearchText}>You're yet to add verse(s) to this playlist!</Text>
+                  </View>
+                }
+              />
+            </View>
+
+            <View style={{marginTop: 'auto'}}>
+              <View style={{padding: 16, marginTop: 20, backgroundColor: Colors.primary}} >
+                <Text style={[
+                  styles.playlist_ItemTitle, 
+                  // themeStyles.playlist_ItemTitle,
+                  {color: "#fff", fontSize: settings.fontSize + 5}
+                ]}>
+                  { highlightedVerse.book_name + " " + highlightedVerse.chapter + ":" + highlightedVerse.verse }
+                </Text>
+                <Text style={[
+                  styles.playlist_ItemVerse, 
+                  // themeStyles.playlist_ItemVerse,
+                  {color: "#fff", fontSize: settings.fontSize}
+                ]}>
+                  { highlightedVerse.text }
+                </Text>
+              </View>
+            </View>
+
+            <View style={[
+              styles.playSection, 
+              themeStyles.playSection, 
+              // {display: playingEnded ? 'none' : 'flex'}
+            ]}>
+              {/* <Text>1.0x</Text> */}
+              <View style={styles.playSectionIconContainer}>
+                <TouchableOpacity onPress={() => onClickPrevious()} disabled={playingIndex > 0 ? false : true}>
+                  <Ionicons name="play-skip-back" size={24} 
+                    style={[
+                      themeStyles.iconColor, 
+                      {color: playingIndex > 0 ? themeStyles.iconColor.color : 'gray'}
+                    ]} 
+                  />
+                </TouchableOpacity>
+
+                  {
+                    isPlaying ?
+                      <TouchableOpacity style={styles.playPauseBTN} onPress={() => onClickPause()}>
+                        {/* <Ionicons name="play" size={24} color="#fff" /> */}
+                        <Ionicons name="pause" size={24} color="#fff" />
+                      </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={styles.playPauseBTN} onPress={() => onClickPlay()}>
+                      <Ionicons name="play" size={24} color="#fff" />
+                      {/* <Ionicons name="pause" size={24} color="#fff" /> */}
+                    </TouchableOpacity>
+                  }
+
+                  <TouchableOpacity onPress={() => onClickNext()} 
+                    disabled={playingIndex < playlists.lists.length - 1 ? false : true}
+                  >
+                    <Ionicons name="play-skip-forward" size={24}
+                      style={[
+                        themeStyles.iconColor, 
+                        {color: playingIndex < playlists.lists.length - 1 ? themeStyles.iconColor.color : 'gray'}
+                      ]}
+                    />
+                  </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <Loading />
+        )
+      }
+
     </SafeAreaView>
   )
 }
@@ -590,7 +681,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderTopWidth: 2,
     padding: 16,
-    marginTop: 'auto',
+    marginTop: 10,
   },
   playSectionIconContainer: {
     flex: 1,
@@ -612,6 +703,4 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
   }
-
-
 });

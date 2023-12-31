@@ -8,6 +8,7 @@ const initialState: settingsInterface = {
     fontSize: 16,
     colorTheme: 'dark',
     searchResultLimit: 500,
+    notificationToken: ''
 };
 
 const settingsSlice = createSlice({
@@ -33,6 +34,13 @@ const settingsSlice = createSlice({
             setLocalStorage("settings", newState);
             return newState;
         },
+        setNotificationToken: (state, action: PayloadAction<string>) => {
+            // console.log(action.payload);
+            const newState =  { ...state, notificationToken: action.payload };
+            setLocalStorage("settings", newState);
+            setLocalStorage("notificationToken", action.payload);
+            return newState;
+        },
         updateSettings: (state, action: PayloadAction<settingsInterface>) => {
             // console.log(action.payload);
             return action.payload;
@@ -45,5 +53,5 @@ const settingsSlice = createSlice({
     }
 });
 
-export const { setFontSize, setColorTheme, setSearchResultLimit, updateSettings, resetSettings } = settingsSlice.actions;
+export const { setFontSize, setColorTheme, setSearchResultLimit, setNotificationToken, updateSettings, resetSettings } = settingsSlice.actions;
 export default settingsSlice.reducer;
