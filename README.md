@@ -45,10 +45,6 @@ Now install the expo command line globally then login using this command
     sudo npm install -g eas-cli && eas login
 ````
 
-EAS login details:::::
-username => etomeni
-password => usze9Mm?k8fyM6&
-
 ## Generate test apk for android
 
 ````

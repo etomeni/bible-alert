@@ -37,7 +37,7 @@ export default function ScheduleAlert(
                 schedule: {
                     hour: Number(_hours),
                     minute: Number(_minutes),
-                    repeats: false
+                    repeats: scheduleAlertStatus
                 }, 
                 extraData: 'Extra data goes here...',
                 bibleVerse: playlists.lists[0],

@@ -82,7 +82,7 @@ export default function ViewPlaylist() {
       );
       
       setTimeout(() => {
-        _play_(highlightedVerse);
+        _play_(notificationBibleVerse);
       }, 500);
     }
   }, [lastNotificationResponse]);

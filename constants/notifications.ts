@@ -68,15 +68,15 @@ export function scheduleNextNotification(
             const newIndex = indexOfBibleVerse < currentPlaylist.lists.length - 1 ? indexOfBibleVerse + 1 : 0;
             const newBibleVerse = currentPlaylist.lists[newIndex];
             
-            console.log(notificationSchedule);
+            // console.log(notificationSchedule);
             
             const newNotificationData: notificationData = {
                 title: currentPlaylist.title,
                 msg: `${newBibleVerse.book_name + " " + newBibleVerse.chapter + ":" + newBibleVerse.verse} \n ${newBibleVerse.text}`,
                 schedule: {
-                    hour: notificationSchedule.hour || 0,
+                    hour: notificationSchedule.hour,
                     minute: notificationSchedule.minute,
-                    repeats: false
+                    repeats: notificationSchedule.repeats
                 },
                 // schedule: notificationSchedule,
                 extraData: 'Extra data goes here...',

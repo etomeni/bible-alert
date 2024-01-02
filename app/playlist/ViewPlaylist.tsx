@@ -511,9 +511,9 @@ export default function ViewPlaylist() {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => {router.push("/playlist/ViewNotificationPlaylist");}}>
+      {/* <TouchableOpacity onPress={() => {router.push("/playlist/ViewNotificationPlaylist");}}>
         <Text style={{color: '#fff', fontSize: 20}}>open notification section</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   )
 }
