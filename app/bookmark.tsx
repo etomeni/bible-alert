@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     },
     verseTextContainer: {
         marginBottom: 16,
-        textAlign: 'justify'
+        // textAlign: 'justify'
     },
     bookmarkContainer: {
     },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     },
     bookmarkVerse: {
         // fontSize: 16,
-        textAlign: 'justify'
+        // textAlign: 'justify'
     },
     listIcon: {
         color: 'white',

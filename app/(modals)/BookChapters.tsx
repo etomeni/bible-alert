@@ -1,29 +1,16 @@
 import { SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-
-import bibleKJV from "../../assets/bible/kjvTS";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/state/store";
-import { useNavigation } from "expo-router";
-import Colors from "@/constants/Colors";
-import { selectedChapter } from "@/state/slices/bibleSelectionSlice";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-function getBibleBookChapters(bible: any, bookName: string) {
-    const _books = bible.filter((book: any) => book.book_name === bookName);
+import { useDispatch, useSelector } from "react-redux";
+import bibleKJV from "@/assets/bible/kjvTS";
+import { AppDispatch, RootState } from "@/state/store";
+import Colors from "@/constants/Colors";
+import { selectedChapter } from "@/state/slices/bibleSelectionSlice";
+import { getBibleBookChapters } from "@/constants/bibleResource";
 
-    const uniqueBookChapters = _books.reduce((acc: any, book: any) => {
-        const existingChapters = acc.find((b: any) => b === book.chapter);
-        if (!existingChapters) {
-            acc.push(book.chapter);
-        }
-        return acc;
-    }, []);
-
-    return uniqueBookChapters;
-}
 
 const BookChapters = () => {
-    const navigation: any = useNavigation();
     const dispatch = useDispatch<AppDispatch>();
     const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
@@ -32,22 +19,16 @@ const BookChapters = () => {
       
     const onSelectBook = (chapter: number) => {
         dispatch(selectedChapter(chapter));
-        navigation.navigate('(modals)/BookVerses');
-        // navigation.goBack();
+        router.push("/(modals)/BookVerses");
     }
 
     const themeStyles = StyleSheet.create({
-        text: {
-            // marginBottom: 16,
-            textAlign: 'justify',
+        textColor: {
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-            fontSize: settings.fontSize
-            },
-            textColor: {
-                color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         },
         contentBg: {
-            backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            // backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
         }
     });
 

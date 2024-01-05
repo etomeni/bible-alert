@@ -8,7 +8,8 @@ export default {
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
-    headerBackground: 'rgb(241, 241, 241)',
+    // headerBackground: 'rgb(241, 241, 241)',
+    headerBackground: '#fff',
     contentBackground: '#fff',
     BottomSheetBackground: 'rgb(241, 241, 241)'
   },

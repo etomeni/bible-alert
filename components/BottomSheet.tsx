@@ -16,6 +16,7 @@ import { saveBookmark } from '@/state/slices/bookmarkSlice';
 import { bibleInterface } from '@/constants/modelTypes';
 import { useNavigation } from 'expo-router';
 import { setTemptBibleVerseData } from '@/state/slices/temptDataSlice';
+import { bibleVerseToRead, copyBibleVerseToClipboard, shareBibleVerse } from '@/constants/bibleResource';
 
 
 export type Ref = BottomSheetModal;
@@ -44,61 +45,72 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
         }
     }, [s_BibleVerse]);
 
-    const onShare = async () => {
-        try {
-            const shareResult = await Share.share({
-                title: selectedBibleBook,
-                message: sharedText
-            });
+    const onShare = () => {
 
-            if (shareResult.action === Share.sharedAction) {
-                // if (shareResult.activityType) {
-                //     console.log("shared with activity type of: ", shareResult.activityType);
-                // } else {
-                //     console.log("shared");
-                // }
-
-                const msg = `shared!`;
-                let toast = Toast.show(msg, {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
-
+        shareBibleVerse(sharedText, selectedBibleBook).then((res: boolean) => {
+            if (res) {
                 dismiss();
             }
-        } catch (error) {
-            console.log(error);
+        })
 
-            const msg = `Request failed to share.!`;
-            let toast = Toast.show(msg, {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0,
-            });
-        }
+        // const modifiedText = sharedText.replace(/\u2039|\u203a/g, '');
+
+        // try {
+        //     const shareResult = await Share.share({
+        //         title: selectedBibleBook,
+        //         message: modifiedText
+        //     });
+
+        //     if (shareResult.action === Share.sharedAction) {
+        //         // if (shareResult.activityType) {
+        //         //     console.log("shared with activity type of: ", shareResult.activityType);
+        //         // } else {
+        //         //     console.log("shared");
+        //         // }
+
+        //         const msg = `shared!`;
+        //         let toast = Toast.show(msg, {
+        //             duration: Toast.durations.LONG,
+        //             position: Toast.positions.BOTTOM,
+        //             shadow: true,
+        //             animation: true,
+        //             hideOnPress: true,
+        //             delay: 0,
+        //         });
+
+        //         dismiss();
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+
+        //     const msg = `Request failed to share.!`;
+        //     let toast = Toast.show(msg, {
+        //         duration: Toast.durations.LONG,
+        //         position: Toast.positions.BOTTOM,
+        //         shadow: true,
+        //         animation: true,
+        //         hideOnPress: true,
+        //         delay: 0,
+        //     });
+        // }
     }
 
-    const copyToClipboard = async () => {
-        await Clipboard.setStringAsync(sharedText);
-
-        const msg = `copied to clipboard!`;
-        let toast = Toast.show(msg, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0,
-        });
-
+    const copyToClipboard = () => {
+        copyBibleVerseToClipboard(sharedText);
         dismiss();
+
+        // const modifiedText = sharedText.replace(/\u2039|\u203a/g, '');
+        // await Clipboard.setStringAsync(modifiedText);
+
+        // const msg = `copied to clipboard!`;
+        // let toast = Toast.show(msg, {
+        //     duration: Toast.durations.LONG,
+        //     position: Toast.positions.BOTTOM,
+        //     shadow: true,
+        //     animation: true,
+        //     hideOnPress: true,
+        //     delay: 0,
+        // });
     };
 
     const addToBookmark = () => {
@@ -146,17 +158,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
     };
 
     const _read = () => {
-        let thingToSayStarting = '';
-        const thingToSayEnding = `${s_BibleVerse[0].chapter + " vs" + s_BibleVerse[0].verse + " - " + s_BibleVerse[0].text}`;
-        if (s_BibleVerse[0].book_name[0] == '1') {
-            thingToSayStarting = "1st " + s_BibleVerse[0].book_name.slice(1);
-        } else if(s_BibleVerse[0].book_name[0] == '2') {
-            thingToSayStarting = "2nd " + s_BibleVerse[0].book_name.slice(1);
-        } else {
-            thingToSayStarting = s_BibleVerse[0].book_name;
-        }
-
-        const thingToSay = `${thingToSayStarting + " " + thingToSayEnding}`;
+        const thingToSay = bibleVerseToRead(s_BibleVerse[0]);
 
         Speech.speak(
             thingToSay,
@@ -191,11 +193,12 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         },
         contentBg: {
-            // backgroundColor: '#f6f3ea43', // #f6f3ea43
-            backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            // backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
         },
         BSbackground: {
-            backgroundColor: settings.colorTheme == 'dark' ? "rgb(60, 60, 60)" : 'rgb(241, 241, 241)'
+            // backgroundColor: settings.colorTheme == 'dark' ? "rgb(60, 60, 60)" : 'rgb(241, 241, 241)'
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.BottomSheetBackground : Colors.light.BottomSheetBackground
         },
     });
 
@@ -206,6 +209,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
             backgroundStyle={{
                 backgroundColor: themeStyles.BSbackground.backgroundColor,
             }}
+            handleIndicatorStyle={{ display: 'none' }}
             backdropComponent={renderBackdrop}
         >
             <View style={styles.modalContainer}>

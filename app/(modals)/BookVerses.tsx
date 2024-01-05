@@ -1,18 +1,17 @@
+import { router } from "expo-router";
 import { SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
-import bibleKJV from "../../assets/bible/kjvTS";
-import { useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
 import { selectedVerse } from "@/state/slices/bibleSelectionSlice";
 import Colors from "@/constants/Colors";
 import { bibleDetails } from "@/state/slices/bibleVerseSlice";
 import { getBibleBookVerses } from "@/constants/resources";
-import { StatusBar } from "expo-status-bar";
 
 
 const BookVerses = () => {
-    const navigation: any = useNavigation();
     const dispatch = useDispatch<AppDispatch>();
     const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
@@ -27,22 +26,17 @@ const BookVerses = () => {
     const onSelectBook = (verse: number) => {
         dispatch(selectedVerse(verse));
         dispatch(bibleDetails(_selected.bible));
-        navigation.navigate('(tabs)');
-        // navigation.goBack();
+        router.push("/(tabs)");
+        // navigation.navigate('(tabs)');
     }
 
     const themeStyles = StyleSheet.create({
-        text: {
-            // marginBottom: 16,
-            textAlign: 'justify',
-            color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-            fontSize: settings.fontSize
-        },
         textColor: {
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         },
         contentBg: {
-            backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            // backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
         }
     });
 
@@ -62,7 +56,7 @@ const BookVerses = () => {
                                         themeStyles.contentBg,
                                         verse == selectedBibleBook.verse && styles.active 
                                     ]}
-                                    onPress={() => { onSelectBook(verse) }}
+                                    onPress={() => onSelectBook(verse)}
                                 >
                                     <Text style={[
                                         themeStyles.textColor,

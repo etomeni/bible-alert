@@ -1,8 +1,9 @@
 import { useState, memo } from 'react';
 import { 
-  SafeAreaView, Text, View, Image,
+  Text, View, Image,
   StyleSheet, TextInput, TouchableOpacity, FlatList 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
 import { getBibleBookVerses } from '@/constants/resources';
 import { StatusBar } from 'expo-status-bar';
+import { formatBibleVerseToDisplay } from '.';
  
 
 function highlightSearchWord(searchResults: bibleInterface[], searchValue: string) {
@@ -25,37 +27,49 @@ function highlightSearchWord(searchResults: bibleInterface[], searchValue: strin
 
   const result = searchResults.map((verse) => {
     // Split the text into parts before and after the matched query
-    const parts = verse.text.split(new RegExp(`(${searchKeyWord})`, 'gi'));
+    const modifiedText = verse.text.replace(/\u2039|\u203a/g, '');
+    const parts = modifiedText.split(new RegExp(`(${searchKeyWord})`, 'gi'));
 
     // Map each part to Text component, bolding the matched query
     const formattedText = parts.map((part, index) => {
       return(
-        <Text key={index} style={
-          part.trim().toLowerCase() === searchKeyWord ? {
-            fontWeight: 'bold',
-            backgroundColor: Colors.primary,
-            color: 'white',
-            paddingHorizontal: 5
-          } : {
-            fontWeight: 'normal'
+        <Text>
+          {
+            part.trim().toLowerCase() === searchKeyWord ? (
+              <Text key={index} style={{
+                fontWeight: 'bold',
+                backgroundColor: Colors.primary,
+                color: 'white',
+                paddingHorizontal: 5
+              }}>
+                { part }
+              </Text>
+            ) : (
+              <Text key={index}>
+                { part }
+                {/* { formatBibleVerseToDisplay(part) } */}
+              </Text>
+            )
           }
-        }>
-          { part }
         </Text>
-      );
 
-      // return part.toLowerCase() === searchKeyWord ? (
-      //   <Text key={index} style={{ fontWeight: 'bold' }}>
-      //     {part}
-      //   </Text>
-      // ) : (
-      //   <Text key={index}>{part}</Text>
-      // );
+        // <Text key={index} style={
+        //   part.trim().toLowerCase() === searchKeyWord ? {
+        //     fontWeight: 'bold',
+        //     backgroundColor: Colors.primary,
+        //     color: 'white',
+        //     paddingHorizontal: 5
+        //   } : {
+        //     fontWeight: 'normal'
+        //   }
+        // }>
+        //   { part }
+        // </Text>
+      );
     });
 
     return {
       ...verse,
-      // formattedText: <Text>{formattedText}</Text>,
       formattedText: formattedText,
     };
   });
@@ -107,7 +121,9 @@ export default function SearchScreen() {
       const _search_Results = [];
       let count = 0;
       for (const obj of bibleKJV) {
-        const searchFields = obj.text.toLowerCase();
+        const modifiedText = obj.text.replace(/\u2039|\u203a/g, '');
+
+        const searchFields = modifiedText.toLowerCase();
         if (searchFields.includes(searchKeyWords)) {
           _search_Results.push(obj);
           count++;
@@ -193,7 +209,8 @@ export default function SearchScreen() {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
       backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
       borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
-      fontSize: settings.fontSize
+      fontSize: 16
+      // fontSize: settings.fontSize
     },
     inputContainer: {
       borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
@@ -227,7 +244,7 @@ export default function SearchScreen() {
   
   return (
     <SafeAreaView>
-      <StatusBar style={'auto'} backgroundColor={Colors.primary} />
+      <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
       <View style={[styles.inputContainer, themeStyles.inputContainer]}>
         <TextInput
@@ -235,7 +252,7 @@ export default function SearchScreen() {
           onChangeText={setSearchValue}
           value={searchValue}
           selectionColor={themeStyles.textColor.color}
-          placeholder="Search in KJV"
+          placeholder=" Search in KJV"
           placeholderTextColor={'gray'}
           keyboardType="web-search"
           returnKeyType="search"
@@ -278,18 +295,6 @@ export default function SearchScreen() {
               // initialScrollIndex={c_Index}
               renderItem={({item}) => (
                 <MyListItem item={item} />
-
-                // <TouchableOpacity style={[styles.searchResult, themeStyles.contentBg]} 
-                //   onPress={() => onClickVerse(item)}
-                // >
-                //   <Text style={[styles.bookChapterTextContainer, themeStyles.textSearchVerse]}>
-                //     { item.book_name + " " + item.chapter + ":" + item.verse }
-                //   </Text>
-
-                //   <Text style={[styles.verseTextContainer, themeStyles.text]}>
-                //     { item.formattedText }
-                //   </Text>
-                // </TouchableOpacity>
               )}
               keyExtractor={(item, index) => `${ index }`}
               ListEmptyComponent={

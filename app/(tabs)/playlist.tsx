@@ -2,27 +2,25 @@ import { View, Text, FlatList, TouchableOpacity,
   StyleSheet, SafeAreaView, Image
 } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { router } from "expo-router";
 
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import { useEffect, useRef, useState } from 'react';
 import { _Playlists_ } from '@/constants/modelTypes';
 import PlaylistOptionsBottomSheet from '@/components/PlaylistOptionsBottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-// import { setTemptPlaylistData } from '@/state/slices/temptPlaylistSlice';
 import Toast from 'react-native-root-toast';
-import { useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { deletePlaylist } from '@/state/slices/playlistSlice';
 import { setTemptPlaylistData } from '@/state/slices/temptDataSlice';
 
 
 export default function PlaylistScreen() {
-  const navigation: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const _reduxPlaylists = useSelector((state: RootState) => state.playlists);
 
@@ -40,12 +38,9 @@ export default function PlaylistScreen() {
     bottomSheetRef.current?.present();
   }
 
-  const onClickPlay = (item: _Playlists_) => {
+  const onClickPlaylist = (item: _Playlists_) => {
     dispatch(setTemptPlaylistData(item));
-    navigation.navigate('playlist/ViewPlaylist');
-
-    // dispatch(setTemptPlaylistData({ ...item, action: "Play" }));
-    // navigation.navigate('PlaylistView');
+    router.push("/playlist/ViewPlaylist");
   }
 
   const onClickDelete = (pItem: _Playlists_) => {
@@ -64,7 +59,7 @@ export default function PlaylistScreen() {
 
   const onClickEdit = (item: _Playlists_) => {
     dispatch(setTemptPlaylistData(item));
-    navigation.navigate('playlist/EditPlaylist');
+    router.push("/playlist/EditPlaylist");
   }
 
   const themeStyles = StyleSheet.create({
@@ -130,7 +125,7 @@ export default function PlaylistScreen() {
                 renderRightActions={() => <RightSwipeActions item={item} />}
               >
                 <View style={styles.listContent}>
-                  <TouchableOpacity style={{flexGrow: 1}} onPress={() => onClickPlay(item)}>
+                  <TouchableOpacity style={{flexGrow: 1}} onPress={() => onClickPlaylist(item)}>
                     <View style={{paddingVertical: 10}}>
                       <Text style={[styles.listTextContainer, themeStyles.text]}>{ item.title }</Text>
                       <Text style={{color: 'gray', fontSize: 18}}>
@@ -151,7 +146,7 @@ export default function PlaylistScreen() {
           keyExtractor={(item, index) => `${index}`}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Image source={require('@/assets/images/empty.png')} style={{ width: 350, height: 350 }} />
+              <Image source={require('@/assets/images/empty.png')} style={{ width: 300, height: 300 }} />
               <Text style={[styles.emptyPlaylistText, themeStyles.textColor]}>You don't have anything on your playlist yet.</Text>
             </View>
           }
@@ -193,7 +188,6 @@ const styles = StyleSheet.create({
   listTextContainer: {
     fontSize: 16,
     fontWeight: "600",
-    
   },
   swiperIconBTN: {
     alignContent: 'center',
@@ -209,7 +203,7 @@ const styles = StyleSheet.create({
   },
   emptyPlaylistText: {
     // color: 'gray',
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'center'
   }
 });

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StatusBar } from 'expo-status-bar';
 import Toast from 'react-native-root-toast';
-import { useNavigation } from "expo-router";
+import { Stack, useNavigation } from "expo-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
@@ -79,9 +80,9 @@ export default function EditPlaylist() {
     },
     playlistTitleInput: {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground,
       borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
-      fontSize: settings.fontSize
+      // fontSize: settings.fontSize
     },
     inputContainer: {
       borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
@@ -98,19 +99,26 @@ export default function EditPlaylist() {
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
       <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
+      <Stack.Screen options={{ 
+        headerShown: true,
+        headerTitleStyle:  { fontSize: 24 },
+        header: () => (
+          <SafeAreaView style={[themeStyles.headerBackground, styles.headerContainer]}>
+            <BackButtonArrow />
+            <Text style={[themeStyles.textColor, styles.headerTitle]}>
+              Edit Playlist
+            </Text>
+            <Text></Text>
+          </SafeAreaView>
+        ),
+        headerTitle: 'Edit Playlist',
+        title: 'Edit Playlist'
+      }} />
 
-      <View style={[themeStyles.headerBackground, styles.headerContainer]}>
-        <BackButtonArrow />
-        <Text style={[themeStyles.textColor, styles.headerTitle]}>
-          Edit Playlist
-        </Text>
-        <Text></Text>
-      </View>
-
-      <View style={{padding: 16, flex: 1}}>
+      <View style={{paddingHorizontal: 16, marginTop: 10, flex: 1}}>
         <View style={[styles.inputContainer, themeStyles.inputContainer]}>
           <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 10}]}>
             <Text>Playlist Title</Text>
@@ -163,14 +171,14 @@ export default function EditPlaylist() {
             onKeyPress={({nativeEvent: {key: keyValue}}) => {
               // const enteredKey = nativeEvent.key;
               // console.log(keyValue);
-              if (keyValue == 'Enter') {
-                editPlaylistFunc();
-              }
+              // if (keyValue == 'Enter') {
+              //   editPlaylistFunc();
+              // }
             }}
           />
         </View>
 
-        <View style={{marginTop: 'auto'}}>
+        <View style={{marginTop: 'auto', marginBottom: 20}}>
           <TouchableOpacity
             onPress={() => { editPlaylistFunc(); }}
             disabled={playlistTitleValue ? false : true}
@@ -182,7 +190,7 @@ export default function EditPlaylist() {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </>
   )
 }
 
@@ -199,7 +207,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   playlistDescriptionInput: {
-    flexGrow: 1,
+    // flexGrow: 1,
     borderWidth: 0.4,
     borderRadius: 5,
     // borderColor: 'gray',
@@ -215,23 +223,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   btnContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    // backgroundColor: Colors.primaryDark,
     padding: 7,
     borderRadius: 5,
-    marginLeft: 10,
   },
   btnText: {
-    fontSize: 30,
-    // color: 'gray'
+    fontSize: 20,
+    textAlign: 'center',
+    textTransform: 'uppercase'
   },
   headerContainer: {
-    marginBottom: 16, 
+    // marginBottom: 16, 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
-    padding: 16, 
+    // padding: 16, 
   },
   headerTitle: {
     fontSize: 30,

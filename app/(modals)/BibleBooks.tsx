@@ -1,30 +1,16 @@
-import { useNavigation } from "expo-router";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
-import bibleKJV from "../../assets/bible/kjvTS";
-
-import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatch, RootState } from './../../state/store';
-import { selectedBibleBook } from "@/state/slices/bibleSelectionSlice";
-import Colors from "@/constants/Colors";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-function getBibleBooks(bible: any) {
-    const uniqueBooks = bible.reduce((acc: any, book: any) => {
-        const existingBook = acc.find((b: any) => b.book_name === book.book_name);
-        if (!existingBook) {
-            acc.push({
-                book_name: book.book_name,
-                book_number: book.book,
-            });
-        }
-        return acc;
-    }, []);
-    
-    return uniqueBooks;
-}
+import { useSelector, useDispatch } from 'react-redux';
+import bibleKJV from "@/assets/bible/kjvTS";
+import { AppDispatch, RootState } from '@/state/store';
+import { selectedBibleBook } from "@/state/slices/bibleSelectionSlice";
+import { getBibleBooks } from "@/constants/bibleResource";
+import Colors from "@/constants/Colors";
+
 
 const BibleBooks = () => {
-    const navigation: any = useNavigation();
     const dispatch = useDispatch<AppDispatch>();
     const newTestamentBooks = getBibleBooks(bibleKJV.new);
     const oldTestamentBooks = getBibleBooks(bibleKJV.old);
@@ -34,33 +20,24 @@ const BibleBooks = () => {
 
     const onSelectBook = (book: {book_name: string, book_number: number}) => {
         dispatch(selectedBibleBook(book));
-        navigation.navigate('(modals)/BookChapters');
-        // navigation.goBack();
+        router.push("/(modals)/BookChapters");
     }
 
-
     const themeStyles = StyleSheet.create({
-        text: {
-            // marginBottom: 16,
-            textAlign: 'justify',
+        textColor: {
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-            fontSize: settings.fontSize
-            },
-            textColor: {
-                color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         },
         contentBg: {
-            backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            // backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+            backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
         }
     });
-
     
     return(
         <SafeAreaView style={{flex: 1}}>
             <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
             <ScrollView>
-
                 <View style={styles.container}>
                     <View style={styles.testamentContainer}>
                         <Text style={[styles.testamentText, themeStyles.textColor]}>Old Testament</Text>
@@ -75,7 +52,7 @@ const BibleBooks = () => {
                                         themeStyles.contentBg,
                                         book.book_name == selectedBibleBookRedux.book_name && styles.active 
                                     ]}
-                                    onPress={() => { onSelectBook(book) }}
+                                    onPress={() => onSelectBook(book)}
                                 >
                                     <Text style={[
                                         themeStyles.textColor,

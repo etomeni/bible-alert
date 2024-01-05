@@ -81,7 +81,7 @@ export default function CreateNewPlaylist() {
 
       <View style={{padding: 16, flex: 1}}>
         <View style={[styles.inputContainer, themeStyles.inputContainer]}>
-          <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 16}]}>
+          <Text style={[themeStyles.textColor, {fontSize: 20, marginBottom: 16}]}>
             <Text>Enter a playlist name</Text>
             <Text style={{color: '#de2341'}}> *</Text>
           </Text>
@@ -144,12 +144,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // backgroundColor: Colors.primaryDark,
-    padding: 7,
+    padding: 10,
     borderRadius: 5,
     marginLeft: 10,
   },
   btnText: {
-    fontSize: 30,
+    fontSize: 20,
+    textTransform: 'uppercase'
     // color: 'gray'
   }
   

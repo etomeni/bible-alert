@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, FlatList, 
+import { StyleSheet, FlatList, SafeAreaView,
   TouchableOpacity, Text, View, Image
 } from 'react-native';
 
@@ -12,7 +12,30 @@ import { bibleVerseDetails } from '@/state/slices/selectedBibleVerseModalSlice';
 import Colors from '@/constants/Colors';
 import { StatusBar } from 'expo-status-bar';
 
-// export default function TabOneScreen() {
+
+export function formatBibleVerseToDisplay(str: string) {
+  const modifiedText = str.replace(/\u2039(.*?)\u203a/g, (match, p1) => {
+    return `<red>${p1}</red>`;
+  });
+
+  const parts = modifiedText.split(/(<red>.*?<\/red>)/g);
+
+  return (
+    <Text>
+      {parts.map((part, index) =>
+        part.startsWith('<red>') ? (
+          <Text key={index} style={{ color: 'red' }}>
+            {part.substring(5, part.length - 6)}
+          </Text>
+        ) : (
+          part
+        )
+      )}
+    </Text>
+  );
+};
+
+
 export default function IndexScreen() {
   const Bible: bibleInterface[] = useSelector((state: RootState) => state.bible);
   const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
@@ -27,11 +50,12 @@ export default function IndexScreen() {
   }, [selectedBibleBook]);
 
   useEffect(() => {
-    flatListRef.current?.scrollToIndex({
-      index: c_Index, 
-      animated: true,
-    })
-
+    setTimeout(() => {
+      flatListRef.current?.scrollToIndex({
+        index: c_Index,
+        animated: true,
+      });
+    }, 400);
   }, [c_Index]);
   
 
@@ -54,8 +78,9 @@ export default function IndexScreen() {
     }
   });
 
+
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView>
       <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
       <View style={styles.container}>
@@ -72,7 +97,8 @@ export default function IndexScreen() {
                     {`${item.verse}. `}
                   </Text>
                   <Text style={themeStyles.text}>
-                    {item.text}
+                    {/* {item.text.trim()} */}
+                    {formatBibleVerseToDisplay(item.text.trim())}
                   </Text>
                 </Text>
               </TouchableOpacity>
@@ -106,8 +132,8 @@ const styles = StyleSheet.create({
     // paddingVertical: 10,
   },
   verseTextContainer: {
-    marginBottom: 16,
-    textAlign: 'justify',
+    marginBottom: 10,
+    // textAlign: 'justify',
     // color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text
   },
   emptyContainer: {
@@ -117,33 +143,7 @@ const styles = StyleSheet.create({
   },
   emptySearchText: {
     color: 'gray',
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'center'
   }
-  // verseSelectionContainer: {
-  //   flex: 1,
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   marginVertical: 10,
-  //   marginBottom: 20,
-  //   borderStyle: 'solid',
-  //   borderWidth: 1,
-  //   borderColor: 'white',
-  //   borderRadius: 20
-  // },
-  // selctionText: {
-  //   flexGrow: 1,
-  //   flex: 1,
-  //   textAlign: 'center',
-  //   padding: 5,
-  // },
-  // bookSelction: {
-  //   borderRightColor: "white",
-  //   borderRightWidth: 1,
-  //   borderStyle: 'solid'
-  // },
-  // versionSelction: {
-  //   backgroundColor: '#f6f3ea43',
-  //   borderRadius: 20
-  // },
 });

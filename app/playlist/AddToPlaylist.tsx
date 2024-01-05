@@ -103,12 +103,6 @@ export default function AddToPlaylist() {
   }
 
   const themeStyles = StyleSheet.create({
-    text: {
-      // marginBottom: 16,
-      textAlign: 'justify',
-      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-      fontSize: settings.fontSize
-    },
     textColor: {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
     },
@@ -120,21 +114,13 @@ export default function AddToPlaylist() {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.primary,
     },
     contentBg: {
-      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
     },
     playlistNameInput: {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
-      borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
-      fontSize: settings.fontSize
-    },
-    inputContainer: {
-      borderColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff",
-    },
-    textSearchVerse: {
-      textAlign: 'justify',
-      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
-      fontSize: settings.fontSize + 5
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.headerBackground : Colors.light.contentBackground,
+      borderColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground,
+      // fontSize: settings.fontSize
     }
   });
 
@@ -177,7 +163,7 @@ export default function AddToPlaylist() {
         </View>
 
 
-        <View style={{marginVertical: 35,}}>
+        <View style={{marginVertical: 35}}>
           <FlatList
             data={displayPlaylist}
             // ref={flatListRef}
@@ -191,7 +177,7 @@ export default function AddToPlaylist() {
                   <Text style={[themeStyles.textColor, styles.existingPlaylistText]}>
                     {item.title}
                   </Text>
-                  <Text style={[styles.existingPlaylistText, {color: 'gray', marginTop: 5}]}>
+                  <Text style={[styles.existingPlaylistText, {color: 'gray'}]}>
                     {`${item.lists.length} Verse${item.lists.length > 1 ? 's' : ''}`}
                   </Text>
                 </View>
@@ -201,7 +187,7 @@ export default function AddToPlaylist() {
                    checkInclusiveness(item.lists) ? (
                     <Ionicons name="radio-button-on" size={24} style={themeStyles.iconColor} />
                    ) : (
-                    <Ionicons name="radio-button-off" size={24} style={themeStyles.iconColor} />
+                    <Ionicons name="radio-button-off" size={24} color={'gray'} />
                    ) 
                   }
                 </View>
@@ -210,7 +196,7 @@ export default function AddToPlaylist() {
             keyExtractor={(item, index) => `${index}`}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Image source={require('@/assets/images/empty.png')} style={{ width: 350, height: 350 }} />
+                <Image source={require('@/assets/images/empty.png')} style={{ width: 250, height: 250 }} />
                 <Text style={[styles.emptyPlaylistText, themeStyles.textColor]}>
                   You don't have a playlist with that title.
                 </Text>
@@ -236,11 +222,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flexGrow: 1,
   },
-  inputContainer: {
-    // flexDirection: 'row',
-    // padding: 16,
-    borderBottomWidth: 1,
-  },
   btnContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -250,12 +231,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   btnText: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
+    textTransform: 'uppercase'
   },
   subTitleText: {
-    fontSize: 25,
+    fontSize: 20,
     // fontWeight: 'bold',
     // color: 'white',
     marginVertical: 25
@@ -269,7 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   existingPlaylistText: {
-    fontSize: 20
+    fontSize: 18
   },
   iconColor: {
     color: Colors.primary
@@ -281,7 +263,7 @@ const styles = StyleSheet.create({
   },
   emptyPlaylistText: {
     // color: 'gray',
-    fontSize: 24,
+    fontSize: 18,
     textAlign: 'center'
   }
   

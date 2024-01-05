@@ -3,11 +3,8 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-// import { useColorScheme, Text, TouchableOpacity} from 'react-native';
 
 import * as Notifications from 'expo-notifications';
-
-// import { Ionicons } from '@expo/vector-icons';
 
 import { store } from './../state/store';
 import { Provider } from 'react-redux';
@@ -17,8 +14,8 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 import { EventRegister } from 'react-native-event-listeners'
 
 import { LogBox } from 'react-native';
-import { getLocalStorage, setLocalStorage } from '@/constants/resources';
-import { _Playlists_, bibleInterface, scheduleInterface, settingsInterface } from '@/constants/modelTypes';
+import { getLocalStorage } from '@/constants/resources';
+import { _Playlists_, settingsInterface } from '@/constants/modelTypes';
 import BackButtonArrow from '@/components/BackButtonArrow';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 // LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -67,25 +64,12 @@ function handleNotificationNavigations() {
 
     function redirect(notification: Notifications.Notification) {
       // const url = notification.request.content.data?.url;
-      const notificationPlaylist: _Playlists_ = notification.request.content.data.playlist;
-      const notificationBibleVerse: bibleInterface = notification.request.content.data.bibleVerse;
-      const notificationSchedule: scheduleInterface = notification.request.content.data.schedule;
-
-      // setLocalStorage("notificationData", {
-      //   notificationPlaylist,
-      //   notificationBibleVerse,
-      //   notificationSchedule
-      // });
+      // const notificationPlaylist: _Playlists_ = notification.request.content.data.playlist;
+      // const notificationBibleVerse: bibleInterface = notification.request.content.data.bibleVerse;
+      // const notificationSchedule: scheduleInterface = notification.request.content.data.schedule;
 
       // if (url) {
       //   router.push(url);
-      // }
-
-      // const bibleVerse: bibleInterface = notification.request.content.data?.bibleVerse;
-      // if (bibleVerse.book) {
-      //   router.push("/notify");
-      //   // router.push("/playlist/ViewPlaylist");
-      //   // router.setParams({});
       // }
 
       router.push("/playlist/ViewNotificationPlaylist");
@@ -153,15 +137,15 @@ function RootLayoutNav() {
                 presentation: 'modal',
                 title: "Choose a book of the Bible",
                 // headerShadowVisible: false,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
-                ),
+                )
               }} />
               <Stack.Screen name="(modals)/BookChapters" options={{ 
                 presentation: 'modal',
                 title: "Chapters",
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
@@ -169,15 +153,16 @@ function RootLayoutNav() {
               <Stack.Screen name="(modals)/BookVerses" options={{ 
                 presentation: 'modal',
                 title: "Verses",
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 )
               }} />
 
               <Stack.Screen name="bookmark" options={{ 
-                headerShown: true, title: "Bookmarks",
-                headerTitleStyle: { fontSize: 30 },
+                headerShown: true, 
+                title: "Bookmarks",
+                headerTitleStyle:  { fontSize: 24 },
                 // headerBackVisible: false
                 headerLeft: () => (
                   <BackButtonArrow />
@@ -186,24 +171,26 @@ function RootLayoutNav() {
               
               <Stack.Screen name="playlist/CreateNewPlaylist" options={{ 
                 presentation: 'modal', headerShown: true,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-                title: 'Create New Playlist'
+                title: 'Create New Playlist',
+                headerTitle: 'Create New Playlist',
               }} />
               <Stack.Screen name="playlist/AddToPlaylist" options={{ 
                 presentation: 'modal', headerShown: true,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle: { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-                title: 'Add To Playlists'
+                title: 'Add To Playlists',
+                headerTitle: 'Add To Playlists'
               }} />
               <Stack.Screen name="playlist/EditPlaylist" options={{ 
                 presentation: 'modal', 
-                headerShown: false,
-                headerTitleStyle: { fontSize: 30 },
+                // headerShown: false,
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
@@ -212,29 +199,43 @@ function RootLayoutNav() {
               }} />
               <Stack.Screen name="playlist/ViewPlaylist" options={{ 
                 headerShown: false,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-                title: 'Playlist'
+                title: 'Playlist',
+                headerTitle: 'Playlist'
               }} />
 
               <Stack.Screen name="playlist/ViewNotificationPlaylist" options={{ 
                 headerShown: false,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-                title: 'Notifications'
+                title: 'Notifications',
+                headerTitle: 'Notifications'
+              }} />
+
+              <Stack.Screen name="playlist/SchedulePlaylist" options={{ 
+                presentation: 'card',
+                // headerShown: true,
+                headerTitleStyle:  { fontSize: 24 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Schedule Playlist',
+                headerTitle: 'Schedule Playlist'
               }} />
 
               <Stack.Screen name="notify" options={{ 
                 headerShown: false,
-                headerTitleStyle: { fontSize: 30 },
+                headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
                   <BackButtonArrow />
                 ),
-                title: 'Test Notifications'
+                title: 'Test Notifications',
+                headerTitle: 'Test Notifications'
               }} />
             </Stack>
           </ThemeProvider>
