@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, FlatList, SafeAreaView,
   TouchableOpacity, Text, View, Image
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
@@ -10,8 +11,7 @@ import BottomSheet from '@/components/BottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { bibleVerseDetails } from '@/state/slices/selectedBibleVerseModalSlice';
 import Colors from '@/constants/Colors';
-import { StatusBar } from 'expo-status-bar';
-
+import { Ionicons } from '@expo/vector-icons';
 
 export function formatBibleVerseToDisplay(str: string) {
   const modifiedText = str.replace(/\u2039(.*?)\u203a/g, (match, p1) => {
@@ -66,6 +66,12 @@ export default function IndexScreen() {
     bottomSheetRef.current?.present();
   }
 
+  const onClickNavigate = (action: "Previous" | "Next") => {
+    console.log(action);
+    
+
+  }
+
   const themeStyles = StyleSheet.create({
     text: {
       // marginBottom: 16,
@@ -118,7 +124,18 @@ export default function IndexScreen() {
               </View>
             }
           />
+        </View>
 
+        <View style={{
+          paddingHorizontal: 16,
+        }}>
+          <TouchableOpacity onPress={() => onClickNavigate("Previous")} style={[styles.chapterNavigationContainer, {left: 0}]}>
+            <Ionicons name="chevron-back" size={45} color='#fff' />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => onClickNavigate("Next")} style={[styles.chapterNavigationContainer, {right: 0}]}>
+            <Ionicons name="chevron-forward" size={45} color='#fff' />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -145,5 +162,11 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 20,
     textAlign: 'center'
+  },
+  chapterNavigationContainer: {
+    backgroundColor: Colors.primary, 
+    borderRadius: 100,
+    position: 'absolute',
+    bottom: 20,
   }
 });

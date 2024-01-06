@@ -112,6 +112,13 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
                     <Text style={[styles.optionText, themeStyles.textColor]}>Edit</Text>
                 </TouchableOpacity>
 
+
+              <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={()=> { router.push('/playlist/SchedulePlaylist'); dismiss();}}>
+                <Ionicons name="timer-outline" size={20} style={[styles.swiperIcon, themeStyles.iconColor]} />
+                <Text style={[styles.optionText, themeStyles.textColor]}>Schedule</Text>
+              </TouchableOpacity>
+
+
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => copyToClipboard()}>
                     <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="copy" size={20} />
                     <Text style={[styles.optionText, themeStyles.textColor]}>Copy</Text>
@@ -132,7 +139,6 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
 });
 
 export default PlaylistOptionsBottomSheet;
-
 
 const styles = StyleSheet.create({
     swiperIcon: {

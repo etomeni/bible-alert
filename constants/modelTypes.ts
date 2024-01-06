@@ -1,3 +1,5 @@
+import { Voice } from "expo-speech";
+
 export type bibleInterface = {
     book_name: string,
     book: number,
@@ -30,7 +32,15 @@ export type settingsInterface = {
     fontSize: number,
     colorTheme: "dark" | "light",
     searchResultLimit: number,
-    notificationToken: string
+    notificationToken: string,
+    voice: Voice,
+    // voiceName: string,
+    // voice: {
+    //     identifier: string,
+    //     name: string,
+    //     quality: any,
+    //     language: string
+    // }
 };
 
 export type _schedule_ = {

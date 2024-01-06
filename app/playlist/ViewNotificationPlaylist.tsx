@@ -25,7 +25,6 @@ import bibleKJV from "@/assets/bible/kjv_all";
 import bible_KJV from "@/assets/bible/kjvTS";
 import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
-import ScheduleAlert from '@/components/ScheduleAlert';
 import Loading from '@/components/Loading';
 import { scheduleNextNotification } from '@/constants/notifications';
 import { bibleVerseToRead, shareBibleVerse } from '@/constants/bibleResource';
@@ -56,7 +55,11 @@ export default function ViewPlaylist() {
   ,[]);
   const { dismiss } = useBottomSheetModal();
   const playlistInfoRef = useRef<BottomSheetModal>(null);
-  const schedulePlaylistRef = useRef<BottomSheetModal>(null);
+
+  useEffect(() => {
+    Notifications.dismissAllNotificationsAsync();
+  }, []);
+  
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
@@ -93,17 +96,20 @@ export default function ViewPlaylist() {
   const _play_ = (highlightedVerse: bibleInterface) => {
     const thingToSay = bibleVerseToRead(highlightedVerse);
 
-    Speech.speak(
-      thingToSay,
-      {
-        rate: 0.8,
-        pitch: 0.6,
-        // voice: 'com.apple.ttsbundle.Moira-compact'
-        onDone: () => onSpeakingEnd(),
-        onStart: () => onSpeakingStart(),
-        onStopped: () => onClickPause(),
-      }
-    );
+    let _speechOptions: Speech.SpeechOptions = {
+      rate: 0.8,
+      pitch: 0.6,
+      // voice: 'com.apple.ttsbundle.Moira-compact'
+      onDone: () => onSpeakingEnd(),
+      onStart: () => onSpeakingStart(),
+      onStopped: () => onClickPause(),
+    };
+
+    if (settings.voice.name != "Default") {
+      _speechOptions.voice = settings.voice.identifier;
+    }
+
+    Speech.speak(thingToSay, _speechOptions);
     setIsPlaying(true);
   }
 
@@ -230,17 +236,20 @@ export default function ViewPlaylist() {
     const s_BibleVerse = playlists.lists[playingIndex];
     const thingToSay = bibleVerseToRead(s_BibleVerse);
 
-    Speech.speak(
-      thingToSay,
-      {
-        rate: 0.8,
-        pitch: 0.6,
-        // voice: 'com.apple.ttsbundle.Moira-compact'
-        onDone: () => onSpeakingEnd(),
-        onStart: () => onSpeakingStart(),
-        onStopped: () => onClickPause(),
-      }
-    );
+    let _speechOptions: Speech.SpeechOptions = {
+      rate: 0.8,
+      pitch: 0.6,
+      // voice: 'com.apple.ttsbundle.Moira-compact'
+      onDone: () => onSpeakingEnd(),
+      onStart: () => onSpeakingStart(),
+      onStopped: () => onClickPause(),
+    };
+
+    if (settings.voice.name != "Default") {
+      _speechOptions.voice = settings.voice.identifier;
+    }
+    
+    Speech.speak(thingToSay, _speechOptions);
   }
 
   const onClickPause = () => {

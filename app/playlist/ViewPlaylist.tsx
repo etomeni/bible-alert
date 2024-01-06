@@ -173,18 +173,20 @@ export default function ViewPlaylist() {
 
     const thingToSay = bibleVerseToRead(s_BibleVerse);
 
-    Speech.speak(
-      thingToSay,
-      {
-        rate: 0.8,
-        pitch: 0.6,
-        // voice: 'com.apple.ttsbundle.Moira-compact'
+    let _speechOptions: Speech.SpeechOptions = {
+      rate: 0.8,
+      pitch: 0.6,
+      // voice: 'com.apple.ttsbundle.Moira-compact'
+      onDone: () => onSpeakingEnd(),
+      onStart: () => onSpeakingStart(),
+      onStopped: () => onClickPause(),
+    };
 
-        onDone: () => onSpeakingEnd(),
-        onStart: () => onSpeakingStart(),
-        onStopped: () => onClickPause(),
-      }
-    );
+    if (settings.voice.name != "Default") {
+      _speechOptions.voice = settings.voice.identifier;
+    }
+
+    Speech.speak(thingToSay, _speechOptions);
   }
 
   const onClickPause = () => {

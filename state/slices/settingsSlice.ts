@@ -2,13 +2,20 @@ import { settingsInterface } from "@/constants/modelTypes";
 import { setLocalStorage } from "@/constants/resources";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { EventRegister } from 'react-native-event-listeners'
+import { Voice, VoiceQuality } from 'expo-speech';
 
 
 const initialState: settingsInterface = {
     fontSize: 16,
     colorTheme: 'dark',
     searchResultLimit: 500,
-    notificationToken: ''
+    notificationToken: '',
+    voice: {
+        identifier: "Default",
+        name: "Default",
+        quality: VoiceQuality.Default,
+        language: "Default"
+    }
 };
 
 const settingsSlice = createSlice({
@@ -34,6 +41,12 @@ const settingsSlice = createSlice({
             setLocalStorage("settings", newState);
             return newState;
         },
+        setVoice: (state, action: PayloadAction<Voice>) => {
+            // console.log(action.payload);
+            const newState =  { ...state, voice: action.payload };
+            setLocalStorage("settings", newState);
+            return newState;
+        },
         setNotificationToken: (state, action: PayloadAction<string>) => {
             // console.log(action.payload);
             const newState =  { ...state, notificationToken: action.payload };
@@ -53,5 +66,5 @@ const settingsSlice = createSlice({
     }
 });
 
-export const { setFontSize, setColorTheme, setSearchResultLimit, setNotificationToken, updateSettings, resetSettings } = settingsSlice.actions;
+export const { setFontSize, setColorTheme, setSearchResultLimit, setVoice, setNotificationToken, updateSettings, resetSettings } = settingsSlice.actions;
 export default settingsSlice.reducer;

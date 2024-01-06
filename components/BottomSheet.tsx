@@ -160,15 +160,17 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
     const _read = () => {
         const thingToSay = bibleVerseToRead(s_BibleVerse[0]);
 
-        Speech.speak(
-            thingToSay,
-            {
-                rate: 0.8,
-                pitch: 0.6,
-                // voice: 'com.apple.ttsbundle.Moira-compact'
-            }
-        );
-
+        let _speechOptions: Speech.SpeechOptions = {
+            rate: 0.8,
+            pitch: 0.6,
+            // voice: 'com.apple.ttsbundle.Moira-compact'
+        };
+        
+        if (settings.voice.name != "Default") {
+            _speechOptions.voice = settings.voice.identifier;
+        }
+      
+        Speech.speak(thingToSay, _speechOptions);
         dismiss();
     }
 

@@ -2,7 +2,7 @@ import { ScrollView, SafeAreaView, StyleSheet, Text, View,
   TouchableOpacity, Pressable, TextInput, Share, Platform, Linking
 } from 'react-native';
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigation } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -17,7 +17,6 @@ import { StatusBar } from 'expo-status-bar';
 
 
 export default function TabFourScreen() {
-  const navigation: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const settings = useSelector((state: RootState) => state.settings);
 
@@ -263,19 +262,25 @@ export default function TabFourScreen() {
             </View>
           </TouchableOpacity>
 
+          <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => router.push("/Voices")}>
+            <Ionicons name="megaphone-outline" size={20} style={themeStyles.iconColor} />
+            <Text style={[styles.text, themeStyles.textColor]}>Reader's Voice</Text>
+            <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />
+          </TouchableOpacity>
+
           <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => shareApp()}>
             <Ionicons name="share-social-outline" size={20} style={themeStyles.iconColor} />
             <Text style={[styles.text, themeStyles.textColor]}>Share App</Text>
             <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]}>
+          {/* <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]}>
             <Ionicons name="information-circle-outline" size={20} style={themeStyles.iconColor} />
             <Text style={[styles.text, themeStyles.textColor]}>About Us</Text>
             <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
-          <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]}>
+          <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => router.push("/feedback")}>
             <Ionicons name="help-circle-outline" size={20} style={themeStyles.iconColor} />
             <Text style={[styles.text, themeStyles.textColor]}>Feedback/Help Center</Text>
             <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />

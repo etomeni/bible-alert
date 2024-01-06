@@ -228,6 +228,26 @@ function RootLayoutNav() {
                 headerTitle: 'Schedule Playlist'
               }} />
 
+              <Stack.Screen name="Voices" options={{ 
+                headerShown: true,
+                headerTitleStyle:  { fontSize: 24 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: "Reader's Voice",
+                headerTitle: "Reader's Voice"
+              }} />
+
+              <Stack.Screen name="feedback" options={{ 
+                headerShown: true,
+                headerTitleStyle:  { fontSize: 24 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Feedback/Help Center',
+                headerTitle: 'Feedback/Help Center'
+              }} />
+
               <Stack.Screen name="notify" options={{ 
                 headerShown: false,
                 headerTitleStyle:  { fontSize: 24 },
