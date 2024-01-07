@@ -1,21 +1,20 @@
 import { Voice } from "expo-speech";
 
 export type bibleInterface = {
-    book_name: string,
-    book: number,
-    chapter: number,
-    verse: number,
-    text: string,
-    formattedText?: any,
-}
+  book_name: string;
+  book: number;
+  chapter: number;
+  verse: number;
+  text: string;
+  formattedText?: any;
+};
 
 export type selectedBibleInterface = {
-    book_name: string,
-    book: number,
-    chapter: number,
-    verse: number,
-}
-
+  book_name: string;
+  book: number;
+  chapter: number;
+  verse: number;
+};
 
 // export type playlistInterface = {
 //     book_name: string,
@@ -29,47 +28,58 @@ export type selectedBibleInterface = {
 // }
 
 export type settingsInterface = {
-    fontSize: number,
-    colorTheme: "dark" | "light",
-    searchResultLimit: number,
-    notificationToken: string,
-    voice: Voice,
-    // voiceName: string,
-    // voice: {
-    //     identifier: string,
-    //     name: string,
-    //     quality: any,
-    //     language: string
-    // }
+  fontSize: number;
+  colorTheme: "dark" | "light";
+  searchResultLimit: number;
+  notificationToken: string;
+  voice: Voice;
+  // voiceName: string,
+  // voice: {
+  //     identifier: string,
+  //     name: string,
+  //     quality: any,
+  //     language: string
+  // }
 };
 
 export type _schedule_ = {
-    status: boolean,
-    hourIntervals: string,
-    minutesIntervals: string,
-}
-
-export type _Playlists_ = {
-    title: string,
-    description?: string,
-    schedule?: _schedule_,
-    lastPlayed?: bibleInterface,
-    lists: bibleInterface[],
+  status: boolean;
+  hourIntervals: string;
+  minutesIntervals: string;
 };
 
+export type _Playlists_ = {
+  title: string;
+  description?: string;
+  schedule?: _schedule_;
+  lastPlayed?: bibleInterface;
+  lists: bibleInterface[];
+};
 
 export type scheduleInterface = {
-    // status: boolean,
-    repeats: boolean,
-    hour: number,
-    minute: number
-}
+  // status: boolean,
+  repeats: boolean;
+  hour: number;
+  minute: number;
+};
 
 export type notificationData = {
-    title: string, 
-    msg: string, 
-    schedule: scheduleInterface, 
-    playlistData: _Playlists_,
-    extraData?: string,
-    bibleVerse: bibleInterface
-}
+  title: string;
+  msg: string;
+  schedule: scheduleInterface;
+  playlistData: _Playlists_;
+  extraData?: string;
+  bibleVerse: bibleInterface;
+};
+
+export type _bibleVerseSelection_ = {
+  chapter_number: number;
+  total_verses: number;
+};
+
+export type _bibleBookSelection_ = {
+  book_name: string;
+  book_number: number;
+  total_chapters: number;
+  chapters: _bibleVerseSelection_[];
+};

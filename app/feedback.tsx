@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
@@ -77,7 +77,7 @@ export default function feedback() {
 
             <View style={{marginBottom: 20}}>
                 <Text style={{
-                    fontSize: 24,
+                    fontSize: 18,
                     fontWeight: 'bold',
                     textAlign: 'center',
                     color: themeStyles.textColor.color,
@@ -85,9 +85,9 @@ export default function feedback() {
                 }}>Please help us get better!</Text>
             </View>
 
-            <View style={{paddingHorizontal: 16, marginTop: 10, flex: 1}}>
+            <ScrollView style={{paddingHorizontal: 16, marginTop: 10}}>
                 <View style={[styles.inputContainer, themeStyles.inputContainer]}>
-                    <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 10}]}>
+                    <Text style={[themeStyles.textColor, {fontSize: 18, marginBottom: 10}]}>
                         <Text>Full Name(s) </Text>
                         <Text style={{color: '#de2341'}}> *</Text>
                     </Text>
@@ -109,7 +109,7 @@ export default function feedback() {
                 </View>
 
                 <View style={[styles.inputContainer, themeStyles.inputContainer, {marginTop: 25}]}>
-                    <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 10}]}>
+                    <Text style={[themeStyles.textColor, {fontSize: 18, marginBottom: 10}]}>
                         <Text>Email</Text>
                         <Text style={{color: '#de2341'}}> *</Text>
                     </Text>
@@ -130,7 +130,7 @@ export default function feedback() {
                 </View>
 
                 <View style={[styles.inputContainer, themeStyles.inputContainer, {marginTop: 25}]}>
-                    <Text style={[themeStyles.textColor, {fontSize: 24, marginBottom: 10}]}>
+                    <Text style={[themeStyles.textColor, {fontSize: 18, marginBottom: 10}]}>
                         <Text>Message</Text>
                         <Text style={{color: '#de2341'}}> *</Text>
                     </Text>
@@ -152,18 +152,18 @@ export default function feedback() {
                         enterKeyHint="done"
                     />
                 </View>
+            </ScrollView>
 
-                <View style={{marginTop: 'auto', marginBottom: 20}}>
-                    <TouchableOpacity
-                        onPress={() => { onSubmitFeedbackForm(); }}
-                        disabled={name && email && message ? false : true}
-                        style={[styles.btnContainer, { backgroundColor: name && email && message ? Colors.primary : Colors.primaryDark }]}
-                    >
-                        <Text style={[themeStyles.textColor, styles.btnText, { color: name && email && message ? themeStyles.textColor.color : 'gray' } ]}>
-                            Submit
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={{marginBottom: 20, paddingHorizontal: 16}}>
+                <TouchableOpacity
+                    onPress={() => { onSubmitFeedbackForm(); }}
+                    disabled={name && email && message ? false : true}
+                    style={[styles.btnContainer, { backgroundColor: name && email && message ? Colors.primary : Colors.primaryDark }]}
+                >
+                    <Text style={[themeStyles.textColor, styles.btnText, { color: name && email && message ? themeStyles.textColor.color : 'gray' } ]}>
+                        Submit
+                    </Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     )
@@ -190,7 +190,8 @@ const styles = StyleSheet.create({
       // backgroundColor: '#fff',
       height: 150,
       fontSize: 16,
-      padding: 10
+      padding: 10,
+      textAlignVertical: 'top'
     },
     inputContainer: {
       // flexDirection: 'row',
@@ -206,6 +207,5 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       textTransform: 'uppercase'
     }
-  });
-  
+});
   

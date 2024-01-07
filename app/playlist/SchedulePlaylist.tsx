@@ -149,7 +149,7 @@ export default function ScheduleAlert() {
 
             <View style={{padding: 16}}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text style={{fontSize: 30, color: '#fff'}}>Schedule Alert</Text>
+                    <Text style={[themeStyles.textColor, {fontSize: 30}]}>Schedule Alert</Text>
                     <Switch 
                         value={scheduleAlertStatus} 
                         onValueChange={setScheduleAlertStatus} 
@@ -170,9 +170,19 @@ export default function ScheduleAlert() {
                                     <TextInput
                                         style={[styles.inputField, themeStyles.inputField]}
                                         value={_hours}
-                                        onChangeText={_setHours}
+                                        // onChangeText={_setHours}
+                                        onChangeText={(text) => {
+                                            const number = Number(text);
+                                            if (!isNaN(number) && number <= 0) {
+                                                _setHours(number == 0 ? '0' : '');
+                                            } else if (!isNaN(number) && number >= 24) {
+                                                _setHours('24');
+                                            } else {
+                                                _setHours(number.toString());
+                                            }
+                                        }}
                                         selectionColor={themeStyles.textColor.color}
-                                        placeholder="Hours Intervals..."
+                                        placeholder="Hours..."
                                         placeholderTextColor={'gray'}
                                         keyboardType="numeric"
                                         maxLength={2}
@@ -187,7 +197,7 @@ export default function ScheduleAlert() {
                                                 _setHours(_minutes);
                                             }
                                         }}
-                                        autoFocus={true}
+                                        // autoFocus={true}
                                     />
                                 </View>
 
@@ -208,7 +218,7 @@ export default function ScheduleAlert() {
                                         }}
                                         value={_minutes}
                                         selectionColor={themeStyles.textColor.color}
-                                        placeholder="Minutes Intervals..."
+                                        placeholder="Minutes..."
                                         placeholderTextColor={'gray'}
                                         keyboardType="numeric"
                                         returnKeyType="default"
@@ -239,7 +249,7 @@ export default function ScheduleAlert() {
                 }
 
                 <TouchableOpacity style={styles.saveBtn} onPress={() => savePlaylistSchedule()}>
-                    <Text style={[styles.btnText, themeStyles.btnText]}>Save</Text>
+                    <Text style={styles.btnText}>Save</Text>
                 </TouchableOpacity>
             </View>
         </>
@@ -283,6 +293,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textTransform: 'uppercase',
         textAlign: 'center',
+        color: '#fff'
     },
     headerContainer: {
         // marginBottom: 16, 

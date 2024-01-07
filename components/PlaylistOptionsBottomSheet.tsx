@@ -20,7 +20,7 @@ export type Ref = BottomSheetModal;
 const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
 
     // const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
-    const snapPoints = useMemo(() => ['40%'], []);
+    const snapPoints = useMemo(() => ['50%'], []);
     const renderBackdrop = useCallback((props: any) => 
         <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} { ...props } />
     ,[]);
@@ -108,29 +108,29 @@ const PlaylistOptionsBottomSheet = forwardRef<Ref>((props, ref) => {
         >
             <View style={{ paddingHorizontal: 5 }}>
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => onClickEdit()}>
-                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="settings" size={20} />
+                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="settings" size={18} />
                     <Text style={[styles.optionText, themeStyles.textColor]}>Edit</Text>
                 </TouchableOpacity>
 
 
               <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={()=> { router.push('/playlist/SchedulePlaylist'); dismiss();}}>
-                <Ionicons name="timer-outline" size={20} style={[styles.swiperIcon, themeStyles.iconColor]} />
+                <Ionicons name="timer-outline" size={18} style={[styles.swiperIcon, themeStyles.iconColor]} />
                 <Text style={[styles.optionText, themeStyles.textColor]}>Schedule</Text>
               </TouchableOpacity>
 
 
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => copyToClipboard()}>
-                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="copy" size={20} />
+                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="copy" size={18} />
                     <Text style={[styles.optionText, themeStyles.textColor]}>Copy</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => onShare()}>
-                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="share-social" size={20} />
+                    <Ionicons style={[styles.swiperIcon, themeStyles.iconColor]} name="share-social" size={18} />
                     <Text style={[styles.optionText, themeStyles.textColor]}>Share</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={[styles.modalBTN, themeStyles.contentBg]} onPress={() => onClickDelete()}>
-                    <FontAwesome5 style={styles.swiperIcon} name="trash" size={20} color={'#de2341'} />
+                    <FontAwesome5 style={styles.swiperIcon} name="trash" size={18} color={'#de2341'} />
                     <Text style={[styles.optionText, themeStyles.textColor]}>Delete</Text>
                 </TouchableOpacity>
             </View>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     optionText: {
-        fontSize: 20
+        fontSize: 18
     }
 });
   

@@ -11,7 +11,7 @@ import Colors from '@/constants/Colors';
 import bibleKJV from "@/assets/bible/kjv_all";
 import bible_KJV from "@/assets/bible/kjvTS";
 import { bibleInterface } from '@/constants/modelTypes';
-import { selectedBibleBook, selectedChapter, selectedVerse } from '@/state/slices/bibleSelectionSlice';
+import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 
 import { useNavigation } from "expo-router";
@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
 import { getBibleBookVerses } from '@/constants/resources';
 import { StatusBar } from 'expo-status-bar';
-import { formatBibleVerseToDisplay } from '.';
  
 
 function highlightSearchWord(searchResults: bibleInterface[], searchValue: string) {
@@ -164,13 +163,12 @@ export default function SearchScreen() {
 
   const onClickVerse = (_bible: bibleInterface) => {
     // console.log(_bible);
-
-    dispatch(selectedBibleBook({
+    dispatch(set_SelectedBible({
       book_name: _bible.book_name,
-      book_number: _bible.book
+      book: _bible.book,
+      chapter: _bible.chapter,
+      verse: _bible.verse,
     }));
-    dispatch(selectedChapter(_bible.chapter));
-    dispatch(selectedVerse(_bible.verse));
 
     const Bible: any = _bible.book > 39 ? bible_KJV.new : bible_KJV.old;
 

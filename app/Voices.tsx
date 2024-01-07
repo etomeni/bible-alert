@@ -1,6 +1,6 @@
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, Image, SafeAreaView, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
 import { useEffect, useState  } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -25,14 +25,23 @@ const defaultVoice = {
 export default function Voices() {
     const dispatch = useDispatch<AppDispatch>();
     const [voices_, setVoices_] = useState<Voice[]>([]);
-    const settings = useSelector((state: RootState) => state.settings);
+    const settings = useSelector((state: RootState) => state.settings)
+    
 
     useEffect(() => {
-        getEnglishVoicesAsync().then((res: Voice[]) => {
+        const fetchVoices = async () => {
+          if (!voices_.length) {
+            const res = await getEnglishVoicesAsync();
             setVoices_(res);
-        });
-    }, []);
+          }
+        };
     
+        const intervalId = setInterval(fetchVoices, 500);
+    
+        return () => clearInterval(intervalId);
+    }, [voices_]);
+    
+
     const onSelectVoice = (voice: Voice) => {
         dispatch(setVoice(voice));
 
@@ -80,45 +89,56 @@ export default function Voices() {
         <SafeAreaView style={{flex: 1}}>
             {
                 voices_.length ? (
-                    <View>
-                        <Text style={{
-                            fontSize: 20,
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: themeStyles.textColor.color,
-                            marginBottom: 15
-                        }}>Choose Reader's Voice</Text>
+                    <View style={styles.container}>
+                        {/* <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => onSelectVoice(defaultVoice)}>
+                            <Text style={[styles.text, themeStyles.textColor]}>
+                                Default
+                            </Text>
 
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                {
+                                    settings.voice.name == 'Default' ? (
+                                        <Ionicons name="radio-button-on" size={24} style={themeStyles.iconColor} />
+                                    ) : (
+                                        <Ionicons name="radio-button-off" size={24} color={'gray'} />
+                                    ) 
+                                }
+                            </View>
+                        </TouchableOpacity> */}
 
-                        <View style={styles.container}>
-                            <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => onSelectVoice(defaultVoice)}>
-                                <Text style={[styles.text, themeStyles.textColor]}>
-                                    Default
-                                </Text>
-
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FlatList
+                            data={voices_}
+                            // ref={flatListRef}
+                            // initialScrollIndex={c_Index}
+                            renderItem={({item, index}) => (
+                                <>
                                     {
-                                        settings.voice.name == 'Default' ? (
-                                            <Ionicons name="radio-button-on" size={24} style={themeStyles.iconColor} />
-                                        ) : (
-                                            <Ionicons name="radio-button-off" size={24} color={'gray'} />
-                                        ) 
+                                        index == 0 ? (
+                                            <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => onSelectVoice(defaultVoice)}>
+                                                <Text style={[styles.text, themeStyles.textColor]}>
+                                                    Default
+                                                </Text>
+                
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    {
+                                                        settings.voice.name == 'Default' ? (
+                                                            <Ionicons name="radio-button-on" size={24} style={themeStyles.iconColor} />
+                                                        ) : (
+                                                            <Ionicons name="radio-button-off" size={24} color={'gray'} />
+                                                        ) 
+                                                    }
+                                                </View>
+                                            </TouchableOpacity>
+                                        ) : (<></>)
                                     }
-                                </View>
-                            </TouchableOpacity>
 
-                            <FlatList
-                                data={voices_}
-                                // ref={flatListRef}
-                                // initialScrollIndex={c_Index}
-                                renderItem={({item}) => (
                                     <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => onSelectVoice(item)}>
                                         <Text style={[styles.text, themeStyles.textColor]}>
                                             {`${item.name}  `}
-                                            <Ionicons style={styles.forwardIcon} name="arrow-forward" size={20} />
+                                            {/* <Ionicons style={styles.forwardIcon} name="arrow-forward" size={18} />
                                             <Text style={{fontStyle: 'italic'}}>
                                                 {`  (${item.language})`}
-                                            </Text>
+                                            </Text> */}
                                         </Text>
 
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -131,16 +151,16 @@ export default function Voices() {
                                             }
                                         </View>
                                     </TouchableOpacity>
-                                )}
-                                keyExtractor={(item, index) => `${index}`}
-                                ListEmptyComponent={
-                                    <View style={styles.emptyContainer}>
-                                        <Image source={require('@/assets/images/empty.png')} style={{ width: 300, height: 300 }} />
-                                        <Text style={styles.emptySearchText}>There's no voice to select from.</Text>
-                                    </View>
-                                }
-                            />
-                        </View>
+                                </>
+                            )}
+                            keyExtractor={(item, index) => `${index}`}
+                            ListEmptyComponent={
+                                <View style={styles.emptyContainer}>
+                                    <Image source={require('@/assets/images/empty.png')} style={{ width: 300, height: 300 }} />
+                                    <Text style={styles.emptySearchText}>There's no voice to select from.</Text>
+                                </View>
+                            }
+                        />
                     </View>
                 ) : (
                     <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
@@ -173,8 +193,8 @@ const styles = StyleSheet.create({
     },
     text: {
       flexGrow: 1,
-      fontSize: 20,
-      paddingLeft: 16
+      fontSize: 18,
+    //   paddingLeft: 16
     },
     forwardIcon: {
       color: 'gray'

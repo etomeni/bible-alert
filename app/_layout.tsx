@@ -133,7 +133,7 @@ function RootLayoutNav() {
           <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(modals)/BibleBooks" options={{ 
+              <Stack.Screen name="verseSelection/BibleBooks" options={{ 
                 presentation: 'modal',
                 title: "Choose a book of the Bible",
                 // headerShadowVisible: false,
@@ -142,7 +142,7 @@ function RootLayoutNav() {
                   <BackButtonArrow />
                 )
               }} />
-              <Stack.Screen name="(modals)/BookChapters" options={{ 
+              <Stack.Screen name="verseSelection/BookChapters" options={{ 
                 presentation: 'modal',
                 title: "Chapters",
                 headerTitleStyle:  { fontSize: 24 },
@@ -150,7 +150,7 @@ function RootLayoutNav() {
                   <BackButtonArrow />
                 ),
               }} />
-              <Stack.Screen name="(modals)/BookVerses" options={{ 
+              <Stack.Screen name="verseSelection/BookVerses" options={{ 
                 presentation: 'modal',
                 title: "Verses",
                 headerTitleStyle:  { fontSize: 24 },

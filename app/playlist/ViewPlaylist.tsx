@@ -16,7 +16,7 @@ import { AppDispatch, RootState } from '@/state/store';
 import Colors from '@/constants/Colors';
 import BackButtonArrow from '@/components/BackButtonArrow';
 import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
-import { selectedBibleBook, selectedChapter, selectedVerse } from '@/state/slices/bibleSelectionSlice';
+import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { getBibleBookVerses } from '@/constants/resources';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import bible_KJV from "@/assets/bible/kjvTS";
@@ -55,12 +55,12 @@ export default function ViewPlaylist() {
   }, [playingIndex]);
 
   const onClickPlaylist_Item = (item: bibleInterface) => {
-    dispatch(selectedBibleBook({
+    dispatch(set_SelectedBible({
       book_name: item.book_name,
-      book_number: item.book
+      book: item.book,
+      chapter: item.chapter,
+      verse: item.verse,
     }));
-    dispatch(selectedChapter(item.chapter));
-    dispatch(selectedVerse(item.verse));
 
     const Bible: any = item.book > 39 ? bible_KJV.new : bible_KJV.old;
 

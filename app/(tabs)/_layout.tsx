@@ -109,21 +109,21 @@ export default function TabLayout() {
           header: () => (
             <SafeAreaView style={themeStyles.headerBackground}>
               <View style={[styles.verseSelectionContainer, themeStyles.border]}>
-                <Link href="/(modals)/BibleBooks" asChild style={ {...styles.selctionWrapper, flexGrow: 3.5} }>
+                <Link href="/verseSelection/BibleBooks" asChild style={ {...styles.selctionWrapper, flexGrow: 3.5} }>
                   <Pressable style={{ ...styles.textContainer, ...styles.bookSelection, ...themeStyles.border }}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.book_name } </Text>
                     <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
 
-                <Link href="/(modals)/BookChapters" asChild style={ styles.selctionWrapper }>
+                <Link href="/verseSelection/BookChapters" asChild style={ styles.selctionWrapper }>
                   <Pressable style={{ ...styles.textContainer, ...styles.bookSelection, ...themeStyles.border }}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.chapter } </Text>
                     <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
 
-                <Link href="/(modals)/BookVerses" asChild style={ styles.selctionWrapper }>
+                <Link href="/verseSelection/BookVerses" asChild style={ styles.selctionWrapper }>
                   <Pressable style={styles.textContainer}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.verse } </Text>
                     <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />

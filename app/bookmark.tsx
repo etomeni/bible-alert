@@ -17,7 +17,7 @@ import bibleKJV from "@/assets/bible/kjv_all";
 import bible_KJV from "@/assets/bible/kjvTS";
 
 import { Ionicons } from '@expo/vector-icons';
-import { selectedBibleBook, selectedChapter, selectedVerse } from '@/state/slices/bibleSelectionSlice';
+import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import { useNavigation } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
@@ -37,13 +37,12 @@ export default function bookmark() {
     }, [_book_mark_]);
     
     const onClickBookmark = (item: bibleInterface) => {
-
-        dispatch(selectedBibleBook({
+        dispatch(set_SelectedBible({
             book_name: item.book_name,
-            book_number: item.book
+            book: item.book,
+            chapter: item.chapter,
+            verse: item.verse,
         }));
-        dispatch(selectedChapter(item.chapter));
-        dispatch(selectedVerse(item.verse));
     
         const Bible: any = item.book > 39 ? bible_KJV.new : bible_KJV.old;
     

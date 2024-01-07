@@ -12,6 +12,11 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { bibleVerseDetails } from '@/state/slices/selectedBibleVerseModalSlice';
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { getBibleBookChapters, getBibleBookVerses, getBibleEndChapter } from '@/constants/bibleResource';
+import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
+import { bibleDetails } from '@/state/slices/bibleVerseSlice';
+import bible_KJV from "@/assets/bible/kjvTS";
+
 
 export function formatBibleVerseToDisplay(str: string) {
   const modifiedText = str.replace(/\u2039(.*?)\u203a/g, (match, p1) => {
@@ -38,16 +43,33 @@ export function formatBibleVerseToDisplay(str: string) {
 
 export default function IndexScreen() {
   const Bible: bibleInterface[] = useSelector((state: RootState) => state.bible);
-  const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
+  const selected_BibleBook = useSelector((state: RootState) => state.selectedBibleBook);
   const settings = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch<AppDispatch>();
   
   const flatListRef = useRef<FlatList<any>>(null);
-  const [c_Index, setc_Index] = useState(selectedBibleBook.verse - 1);
+  const [c_Index, setc_Index] = useState(selected_BibleBook.verse - 1);
+
+  const [previousNav, setPreviousNav] = useState(false);
+  const [nextNav, setNextNav] = useState(true)
 
   useEffect(() => {
-    setc_Index(selectedBibleBook.verse - 1);
-  }, [selectedBibleBook]);
+    setc_Index(selected_BibleBook.verse - 1);
+
+    const getEndChapter = getBibleEndChapter(selected_BibleBook);
+    if (selected_BibleBook.chapter == 1) {
+      setPreviousNav(false);
+    } else {
+      setPreviousNav(true);
+    }
+
+    if (selected_BibleBook.chapter == getEndChapter.length) {
+      setNextNav(false);
+    } else {
+      setNextNav(true);
+    }
+
+  }, [selected_BibleBook]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -67,9 +89,42 @@ export default function IndexScreen() {
   }
 
   const onClickNavigate = (action: "Previous" | "Next") => {
-    console.log(action);
-    
+    // console.log(action);
 
+    const getEndChapter = getBibleEndChapter(selected_BibleBook);
+    if (action == "Previous" && selected_BibleBook.chapter == 1) return;
+    if (action == "Next" && selected_BibleBook.chapter == getEndChapter.length) return;
+
+    const newChapter = action == 'Next' ? selected_BibleBook.chapter + 1 : selected_BibleBook.chapter - 1;
+
+    dispatch(set_SelectedBible({
+      book_name: selected_BibleBook.book_name,
+      book: selected_BibleBook.book,
+      chapter: newChapter,
+      verse: 1,
+    }));
+
+    const Bible: any = selected_BibleBook.book > 39 ? bible_KJV.new : bible_KJV.old;
+
+    const _selected = getBibleBookVerses(
+      Bible,
+      selected_BibleBook.book_name,
+      newChapter,
+    );
+
+    dispatch(bibleDetails(_selected.bible));
+
+    if (selected_BibleBook.chapter == 1) {
+      setPreviousNav(false);
+    } else {
+      setPreviousNav(true);
+    }
+    
+    if (selected_BibleBook.chapter == getEndChapter.length) {
+      setNextNav(false);
+    } else {
+      setNextNav(true);
+    }
   }
 
   const themeStyles = StyleSheet.create({
@@ -129,12 +184,12 @@ export default function IndexScreen() {
         <View style={{
           paddingHorizontal: 16,
         }}>
-          <TouchableOpacity onPress={() => onClickNavigate("Previous")} style={[styles.chapterNavigationContainer, {left: 0}]}>
-            <Ionicons name="chevron-back" size={45} color='#fff' />
+          <TouchableOpacity onPress={() => onClickNavigate("Previous")} style={[styles.chapterNavigationContainer, {left: 0, display: previousNav ? 'flex': 'none'}]}>
+            <Ionicons name="chevron-back" size={40} color='#fff' />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => onClickNavigate("Next")} style={[styles.chapterNavigationContainer, {right: 0}]}>
-            <Ionicons name="chevron-forward" size={45} color='#fff' />
+          <TouchableOpacity onPress={() => onClickNavigate("Next")} style={[styles.chapterNavigationContainer, {right: 0, display: nextNav ? 'flex': 'none'}]}>
+            <Ionicons name="chevron-forward" size={40} color='#fff' />
           </TouchableOpacity>
         </View>
       </View>
