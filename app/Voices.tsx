@@ -27,7 +27,6 @@ export default function Voices() {
     const [voices_, setVoices_] = useState<Voice[]>([]);
     const settings = useSelector((state: RootState) => state.settings)
     
-
     useEffect(() => {
         const fetchVoices = async () => {
           if (!voices_.length) {

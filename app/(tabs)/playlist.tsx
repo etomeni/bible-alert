@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity,
-  StyleSheet, SafeAreaView, Image
+  StyleSheet, SafeAreaView, Image, TextInput
 } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { router } from "expo-router";
@@ -26,6 +26,8 @@ export default function PlaylistScreen() {
 
   const [playlists, setPlaylist] = useState<_Playlists_[]>(_reduxPlaylists);
   const settings = useSelector((state: RootState) => state.settings);
+  const [playlistNameInput, setPlaylistNameInput] = useState('');
+
 
   useEffect(() => {
     setPlaylist(_reduxPlaylists);
@@ -62,6 +64,35 @@ export default function PlaylistScreen() {
     router.push("/playlist/EditPlaylist");
   }
 
+
+  const searchPlaylistFunc = (text: string) => {
+    setPlaylistNameInput(text);
+    // console.log(text);
+
+    if (text && text.length) {
+      // Convert the query to lowercase for case-insensitive search
+      const searchKeyWords = text.toLowerCase();
+      // OPTIMIZED WAY OF PERFORMING SEARCH LIMITS
+      const _search_Results = [];
+      let count = 0;
+      for (const obj of playlists) {
+        const searchFields = obj.title.toLowerCase();
+        if (searchFields.includes(searchKeyWords)) {
+          _search_Results.push(obj);
+          count++;
+          if (count === settings.searchResultLimit) {
+            break; // Stop searching once we have 500 results
+          }
+        }
+      }
+
+      setPlaylist(_search_Results);
+    } else {
+      setPlaylist(_reduxPlaylists);
+    }
+  }
+
+
   const themeStyles = StyleSheet.create({
     text: {
       // marginBottom: 16,
@@ -82,9 +113,14 @@ export default function PlaylistScreen() {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
     },
     contentBg: {
-      // backgroundColor: '#f6f3ea43', // #f6f3ea43
-      backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
+    },
+    playlistNameInput: {
+      color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.headerBackground : Colors.light.contentBackground,
+      borderColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground,
     }
+
   });
 
   const RightSwipeActions = ({ item }: {item: _Playlists_}) => {
@@ -113,6 +149,30 @@ export default function PlaylistScreen() {
       <StatusBar style={settings.colorTheme == 'dark' ? 'light' : 'dark'} backgroundColor={Colors.primary} />
 
       <PlaylistOptionsBottomSheet ref={bottomSheetRef} />
+
+      <View style={{paddingHorizontal: 16, marginTop: 16}}>
+        <TextInput
+          style={[styles.playlistNameInput, themeStyles.playlistNameInput]}
+          onChangeText={(text: string) => searchPlaylistFunc(text)}
+          value={playlistNameInput}
+          selectionColor={themeStyles.textColor.color}
+          placeholder="search your existing playlists..."
+          keyboardType="web-search"
+          returnKeyType="search"
+          // blurOnSubmit={true}
+          placeholderTextColor={'gray'}
+          inputMode="search"
+          enterKeyHint="search"
+          onKeyPress={({nativeEvent: {key: keyValue}}) => {
+            // const enteredKey = nativeEvent.key;
+            // console.log(keyValue);
+            if (keyValue == 'Enter') {
+              searchPlaylistFunc(playlistNameInput);
+            }
+          }}
+          // autoFocus={true}
+        />
+      </View>
 
       <View style={{ margin: 15 }}>
         <FlatList
@@ -205,5 +265,15 @@ const styles = StyleSheet.create({
     // color: 'gray',
     fontSize: 20,
     textAlign: 'center'
-  }
+  },
+  playlistNameInput: {
+    // height: 40,
+    // margin: 16,
+    borderWidth: 0.4,
+    borderRadius: 5,
+    // borderColor: 'gray',
+    padding: 10,
+    fontSize: 16,
+    flexGrow: 1,
+  },
 });

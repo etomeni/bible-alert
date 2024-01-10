@@ -1,30 +1,53 @@
+import { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from "expo-status-bar";
 
 import { useDispatch, useSelector } from "react-redux";
 import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
 import Colors from "@/constants/Colors";
-import { setSelectedChapter } from "@/state/slices/bibleSelectionSlice";
+import { setSelectedBibleBook, setSelectedChapter } from "@/state/slices/bibleSelectionSlice";
 import { getBibleBookChapters } from "@/constants/bibleResource";
 import { _bibleVerseSelection_ } from "@/constants/modelTypes";
-import { setTemptBibleVerseSelectionData } from "@/state/slices/temptDataSlice";
 
 
 const BookChapters = () => {
+    const queryParams = useLocalSearchParams();
+
     const dispatch = useDispatch<AppDispatch>();
     const settings = useSelector((state: RootState) => state.settings);
     const pSelected_BibleBook = useSelector((state: RootState) => state.selectedBibleBook);
-    const selectedBibleBook = useSelector((state: RootState) => state.temptData.temptBibleBookSelection);
-    
+    // const selectedBibleBook = useSelector((state: RootState) => state.temptData.temptBibleBookSelection);
+
+    const [chapters, setChapters] = useState<any>([]);
+
+    useEffect(() => {
+        if (queryParams.book_name) {
+            const book_number = Number(queryParams.book_number);
+            const book_name: any = queryParams.book_name;
+            setChapters(getBibleBookChapters( book_number > 39 ? bibleKJV.new : bibleKJV.old, book_name));
+
+            dispatch(setSelectedBibleBook({
+                book_name: book_name, 
+                book_number: book_number
+            }));
+            // dispatch(setTemptBibleBookSelectionData(book));
+        } else {
+            setChapters(getBibleBookChapters( pSelected_BibleBook.book > 39 ? bibleKJV.new : bibleKJV.old, pSelected_BibleBook.book_name));
+        }
+    }, []);
+
     // const chapters = getBibleBookChapters( selectedBibleBook.book > 39 ? bibleKJV.new : bibleKJV.old, selectedBibleBook.book_name); // 'Genesis'
       
-    const onSelectBook = (chapter: _bibleVerseSelection_) => {
-        dispatch(setSelectedChapter(chapter.chapter_number));
+    const onSelectBook = (chapter: number) => {
+        router.push({ pathname: '/verseSelection/BookVerses', params: {chapter} });
 
-        dispatch(setTemptBibleVerseSelectionData(chapter));
-        router.push("/verseSelection/BookVerses");
+
+        // dispatch(setSelectedChapter(chapter));
+
+        // dispatch(setTemptBibleVerseSelectionData(chapter));
+        // router.push("/verseSelection/BookVerses");
     }
 
     const themeStyles = StyleSheet.create({
@@ -46,6 +69,26 @@ const BookChapters = () => {
                 <View style={styles.container}>
                     <View style={styles.booksNameContainer}>
                         {
+                            chapters.map((c_hapter: number, index: number) => (
+                                <TouchableOpacity key={index} 
+                                    style={[
+                                        styles.booksName, 
+                                        themeStyles.contentBg,
+                                        c_hapter == pSelected_BibleBook.chapter && styles.active 
+                                    ]}
+                                    onPress={() => { onSelectBook(c_hapter) }}
+                                >
+                                    <Text style={[
+                                        themeStyles.textColor,
+                                        c_hapter == pSelected_BibleBook.chapter && styles.activeText
+                                    ]}>{ c_hapter }</Text>
+                                </TouchableOpacity>
+                            ))
+                        }
+                    </View>
+
+                    {/* <View style={styles.booksNameContainer}>
+                        {
                             selectedBibleBook.chapters.map((c_hapter: _bibleVerseSelection_, index: number) => (
                                 <TouchableOpacity key={index} 
                                     style={[
@@ -62,7 +105,7 @@ const BookChapters = () => {
                                 </TouchableOpacity>
                             ))
                         }
-                    </View>
+                    </View> */}
                 </View>
             </ScrollView>
         </SafeAreaView>

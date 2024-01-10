@@ -26,7 +26,7 @@ export default function ScheduleAlert() {
         if (scheduleAlertStatus) {
             const hourz = _hours || Number(_hours) > 0 ? Number(_hours) : 0;
             const minutez = _minutes || Number(_minutes) > 0 ? Number(_minutes) : 0;
-            if (!hourz && !minutez) {
+            if (!hourz && minutez < 10) {
                 setError(true);
                 return;
             } else {
@@ -239,7 +239,7 @@ export default function ScheduleAlert() {
                             </View>
 
                             <Text style={{color: 'red', fontSize: 16, marginTop: 10, display: error ? 'flex' : 'none' }}>
-                                Alert time interval must be greater than 1 minute.
+                                Schedule time interval must be greater than 10 minute.
                             </Text>
                             
                         </View>

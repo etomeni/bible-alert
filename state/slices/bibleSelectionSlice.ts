@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { selectedBibleInterface } from "@/constants/modelTypes";
 
+type _BibleBookInterface_ = {
+  book_name: string;
+  book_number: number;
+};
+
 const initialState: selectedBibleInterface = {
   book_name: "Genesis",
   book: 1,
@@ -18,9 +23,12 @@ const selectedBibleBookSlice = createSlice({
     ) => {
       return action.payload;
     },
-    setSelectedBibleBook: (state, action: PayloadAction<any>) => {
+    setSelectedBibleBook: (
+      state,
+      action: PayloadAction<_BibleBookInterface_>
+    ) => {
       const newState = {
-        ...initialState,
+        ...state,
         book_name: action.payload.book_name,
         book: action.payload.book_number,
       };

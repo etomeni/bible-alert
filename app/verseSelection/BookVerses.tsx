@@ -1,33 +1,67 @@
-import { router } from "expo-router";
 import { SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { router, useLocalSearchParams } from "expo-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
-import { setSelectedVerse } from "@/state/slices/bibleSelectionSlice";
+import { setSelectedChapter, setSelectedVerse, set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 import Colors from "@/constants/Colors";
 import { bibleDetails } from "@/state/slices/bibleVerseSlice";
 import { getBibleBookVerses } from "@/constants/resources";
+import { useEffect, useState } from "react";
+import { bibleInterface } from "@/constants/modelTypes";
 
 
 const BookVerses = () => {
+    const queryParams = useLocalSearchParams();
+
     const dispatch = useDispatch<AppDispatch>();
     const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
 
     const Bible: any = selectedBibleBook.book > 39 ? bibleKJV.new : bibleKJV.old;
-    const _selected = getBibleBookVerses(
-        Bible,
-        selectedBibleBook.book_name,
-        selectedBibleBook.chapter,
-    ); // 'Genesis'
-      
+    const [verses, setVerses] = useState<any>([]);
+    const [selected_Bible, setSelected_Bible] = useState<bibleInterface[]>([]);
+
+
+    useEffect(() => {
+        if (queryParams.chapter) {
+            const _chapter_ = Number(queryParams.chapter);
+
+            const _selected = getBibleBookVerses(
+                Bible,
+                selectedBibleBook.book_name,
+                _chapter_,
+            );
+            setVerses(_selected.verses);
+            setSelected_Bible(_selected.bible);
+
+            dispatch(setSelectedChapter(_chapter_));
+        } else {
+            const _selected = getBibleBookVerses(
+                Bible,
+                selectedBibleBook.book_name,
+                selectedBibleBook.chapter,
+            ); // 'Genesis'
+
+            setVerses(_selected.verses);
+            setSelected_Bible(_selected.bible);
+        }
+    }, []);
+
+
     const onSelectBook = (verse: number) => {
-        dispatch(setSelectedVerse(verse));
-        dispatch(bibleDetails(_selected.bible));
-        router.push("/(tabs)");
-        // navigation.navigate('(tabs)');
+        dispatch(set_SelectedBible({
+            book_name: selectedBibleBook.book_name,
+            book: selectedBibleBook.book,
+            chapter: selectedBibleBook.chapter,
+            verse: verse,
+        }));
+
+        // dispatch(setSelectedVerse(verse));
+        dispatch(bibleDetails(selected_Bible));
+        router.push({ pathname: '/(tabs)', params: {} });
     }
 
     const themeStyles = StyleSheet.create({
@@ -35,7 +69,6 @@ const BookVerses = () => {
             color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
         },
         contentBg: {
-            // backgroundColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "#fff"
             backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
         }
     });
@@ -49,7 +82,7 @@ const BookVerses = () => {
                 <View style={styles.container}>
                     <View style={styles.booksNameContainer}>
                         {
-                            _selected.verses.map((verse: any, index: number) => (
+                            verses.map((verse: any, index: number) => (
                                 <TouchableOpacity key={index} 
                                     style={[
                                         styles.booksName,

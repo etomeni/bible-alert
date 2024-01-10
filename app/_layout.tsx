@@ -159,6 +159,17 @@ function RootLayoutNav() {
                 )
               }} />
 
+              <Stack.Screen name="verseSelection/Versions" options={{ 
+                presentation: 'modal',
+                // headerShown: true,
+                headerTitleStyle:  { fontSize: 24 },
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Bible Versions',
+                headerTitle: 'Bible Versions'
+              }} />
+
               <Stack.Screen name="bookmark" options={{ 
                 headerShown: true, 
                 title: "Bookmarks",

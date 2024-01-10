@@ -111,7 +111,11 @@ export default function TabLayout() {
               <View style={[styles.verseSelectionContainer, themeStyles.border]}>
                 <Link href="/verseSelection/BibleBooks" asChild style={ {...styles.selctionWrapper, flexGrow: 3.5} }>
                   <Pressable style={{ ...styles.textContainer, ...styles.bookSelection, ...themeStyles.border }}>
-                    <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.book_name } </Text>
+                    <Text 
+                      style={[styles.indexSelectionText, themeStyles.textColor]}
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                    > { selectedBibleBook.book_name } </Text>
                     <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
@@ -130,7 +134,7 @@ export default function TabLayout() {
                   </Pressable>
                 </Link>
 
-                <Link href="/(tabs)" asChild style={ styles.selctionWrapper }>
+                <Link href="/verseSelection/Versions" asChild style={ styles.selctionWrapper }>
                   <Pressable style={{ ...styles.textContainer, ...styles.versionSelction, ...themeStyles.versionSelction}}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> KJV </Text>
                     <MaterialIcons name="arrow-drop-down" size={20} style={themeStyles.iconColor} />

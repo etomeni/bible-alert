@@ -3,6 +3,7 @@ import { StyleSheet, FlatList, SafeAreaView,
   TouchableOpacity, Text, View, Image
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
@@ -146,42 +147,57 @@ export default function IndexScreen() {
 
       <View style={styles.container}>
         <BottomSheet ref={bottomSheetRef} />
-        <View>
-          <FlatList
-            data={Bible}
-            ref={flatListRef}
-            initialScrollIndex={c_Index}
-            renderItem={({item}) => (
-              <TouchableOpacity onPress={() => onClickVerse(item)}>
-                <Text style={styles.verseTextContainer}>
-                  <Text style={{ fontWeight: 'bold', fontSize: settings.fontSize + 5, color: Colors.primary }}>
-                    {`${item.verse}. `}
-                  </Text>
-                  <Text style={themeStyles.text}>
-                    {/* {item.text.trim()} */}
-                    {formatBibleVerseToDisplay(item.text.trim())}
-                  </Text>
-                </Text>
-              </TouchableOpacity>
-            )}
-            onScrollToIndexFailed={info => {
-              const wait = new Promise(resolve => setTimeout(resolve, 500));
-              wait.then(() => {
-                flatListRef.current?.scrollToIndex({ index: c_Index, animated: true })
-              })
-            }}
-            keyExtractor={item => item.verse.toString()}
 
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Image source={require('@/assets/images/empty.png')} style={{ width: 200, height: 200 }} />
-                <Text style={styles.emptySearchText}>Bible referrence not found</Text>
-              </View>
+        <Swipeable
+          renderRightActions={() => <><Text> </Text></>}
+          renderLeftActions={() => <><Text> </Text></>}
+          onSwipeableWillOpen={(direction) => {
+            if (direction == 'right') {
+              onClickNavigate("Next")
             }
-          />
-        </View>
+            if (direction == 'left') {
+              onClickNavigate("Previous")
+            }
+          }}
+        >
+          <View>
+            <FlatList
+              data={Bible}
+              ref={flatListRef}
+              initialScrollIndex={c_Index}
+              renderItem={({item}) => (
+                <TouchableOpacity onPress={() => onClickVerse(item)}>
+                  <Text style={styles.verseTextContainer}>
+                    <Text style={{ fontWeight: 'bold', fontSize: settings.fontSize + 5, color: Colors.primary }}>
+                      {`${item.verse}. `}
+                    </Text>
+                    <Text style={themeStyles.text}>
+                      {/* {item.text.trim()} */}
+                      {formatBibleVerseToDisplay(item.text.trim())}
+                    </Text>
+                  </Text>
+                </TouchableOpacity>
+              )}
+              onScrollToIndexFailed={info => {
+                const wait = new Promise(resolve => setTimeout(resolve, 500));
+                wait.then(() => {
+                  flatListRef.current?.scrollToIndex({ index: c_Index, animated: true })
+                })
+              }}
+              keyExtractor={item => item.verse.toString()}
 
-        <View style={{
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Image source={require('@/assets/images/empty.png')} style={{ width: 200, height: 200 }} />
+                  <Text style={styles.emptySearchText}>Bible referrence not found</Text>
+                </View>
+              }
+            />
+          </View>
+        </Swipeable>
+
+
+        {/* <View style={{
           paddingHorizontal: 16,
         }}>
           <TouchableOpacity onPress={() => onClickNavigate("Previous")} style={[styles.chapterNavigationContainer, {left: 0, display: previousNav ? 'flex': 'none'}]}>
@@ -191,7 +207,7 @@ export default function IndexScreen() {
           <TouchableOpacity onPress={() => onClickNavigate("Next")} style={[styles.chapterNavigationContainer, {right: 0, display: nextNav ? 'flex': 'none'}]}>
             <Ionicons name="chevron-forward" size={40} color='#fff' />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </SafeAreaView>
   );

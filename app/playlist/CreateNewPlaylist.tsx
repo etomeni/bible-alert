@@ -14,27 +14,61 @@ import { createNewPlaylist } from '@/state/slices/playlistSlice';
 
 export default function CreateNewPlaylist() {
   const [playlistNameValue, setPlaylistNameValue] = useState('');
+  const [playlistNameError, setPlaylistNameError] = useState('');
   const settings = useSelector((state: RootState) => state.settings);
   const temptBibleVerse = useSelector((state: RootState) => state.temptData.temptBibleVerse);
   const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
 
+  const _reduxPlaylists = useSelector((state: RootState) => state.playlists);
+
+
   const createNewFunc = () => {
     // console.log(playlistNameValue);
+    const searchKeyWords = playlistNameValue.toLowerCase().trim();
+
+    let status = false;
+
+    for (const obj of _reduxPlaylists) {
+      const searchFields = obj.title.toLowerCase().trim();
+      // if (searchFields.includes(searchKeyWords)) {
+      if (searchFields == searchKeyWords) {
+        status = true;
+        break;
+      }
+    }
+
+    if (status) {
+      setPlaylistNameError(`Playlist already exist!`);
+
+      // const msg = `Playlist already exist!`;
+      // let toast = Toast.show(msg, {
+      //   duration: Toast.durations.LONG,
+      //   position: Toast.positions.BOTTOM,
+      //   shadow: true,
+      //   animation: true,
+      //   // hideOnPress: true,
+      //   // delay: 0,
+      // });
+      
+      return;
+    }
+
+
     dispatch(createNewPlaylist({
       title: playlistNameValue,
       bibleVerse: temptBibleVerse
     }));
 
-    const msg = `new playlist created!`;
-    let toast = Toast.show(msg, {
-        duration: Toast.durations.LONG,
-        // position: Toast.positions.BOTTOM,
-        // shadow: true,
-        // animation: true,
-        // hideOnPress: true,
-        // delay: 0,
-    });
+    // const msg = `new playlist created!`;
+    // let toast = Toast.show(msg, {
+    //     duration: Toast.durations.LONG,
+    //     // position: Toast.positions.BOTTOM,
+    //     // shadow: true,
+    //     // animation: true,
+    //     // hideOnPress: true,
+    //     // delay: 0,
+    // });
 
     navigation.goBack();
   }
@@ -88,7 +122,12 @@ export default function CreateNewPlaylist() {
 
           <TextInput
             style={[styles.playlistNameInput, themeStyles.playlistNameInput]}
-            onChangeText={setPlaylistNameValue}
+            onChangeText={(text) => {
+              setPlaylistNameValue(text);
+              if (playlistNameError) {
+                setPlaylistNameError('');
+              }
+            }}
             value={playlistNameValue}
             selectionColor={themeStyles.textColor.color}
             placeholder="New playlist name"
@@ -108,6 +147,8 @@ export default function CreateNewPlaylist() {
             autoFocus={true}
           />
         </View>
+
+        <Text style={[themeStyles.textColor, styles.errorText]}>{playlistNameError}</Text>
 
         <View style={{marginTop: 'auto'}}>
           <TouchableOpacity
@@ -138,7 +179,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     // flexDirection: 'row',
     // padding: 16,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
   },
   btnContainer: {
     alignItems: 'center',
@@ -152,6 +193,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textTransform: 'uppercase'
     // color: 'gray'
+  },
+  errorText: {
+    fontSize: 16, 
+    marginTop: 10, 
+    color: '#de2341'
   }
   
 });
