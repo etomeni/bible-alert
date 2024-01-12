@@ -16,7 +16,9 @@ import { updateSettings } from '@/state/slices/settingsSlice';
 import Colors from '@/constants/Colors';
 import { restoreBookmark } from '@/state/slices/bookmarkSlice';
 import { restorePlaylists } from '@/state/slices/playlistSlice';
+import { scheduleBackgroundNotification } from '@/constants/notifications';
 
+scheduleBackgroundNotification();
 
 export default function TabLayout() {
   const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);

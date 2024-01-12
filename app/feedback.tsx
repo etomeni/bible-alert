@@ -8,6 +8,7 @@ import { RootState } from '@/state/store';
 
 import Colors from '@/constants/Colors';
 import Toast from 'react-native-root-toast';
+import { evaluatedDate, formatedTime, save2FirestoreDB } from '@/constants/firebase';
 
 
 export default function feedback() {
@@ -15,20 +16,48 @@ export default function feedback() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     const onSubmitFeedbackForm = () => {
+        if (name == '' || name.length < 2) {
+            setErrorMsg("Please enter a name you'll like us to call you.");
+            return;
+        } else if (email == '' || email.length < 8) {
+            setErrorMsg("Please enter a valid email address.");
+            return;
+        } else if (message == '' || message.length < 5) {
+            setErrorMsg("Please enter a message you'll like to share with us, we're to hear from you.");
+            return;
+        }
+        setErrorMsg('');
 
+        const createdAt = `${evaluatedDate('display')}T${formatedTime()}`;
 
-        const msg = ``;
-        let toast = Toast.show(msg, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            // hideOnPress: true,
-            // delay: 0,
+        save2FirestoreDB("bibleAlertFeedback", { name, email, message, createdAt })
+        .then((res: any) => {
+            const msg = `Thanks for contacting, we'll get back to you shortly.`;
+            let toast = Toast.show(msg, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                // hideOnPress: true,
+                // delay: 0,
+            });
+            router.back();
+        }).catch(() => {
+            const msg = `Ooops an error occurred.`;
+            setErrorMsg(msg);
+
+            let toast = Toast.show(msg, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                // hideOnPress: true,
+                // delay: 0,
+            });
         });
-        router.back();
     }
 
     const themeStyles = StyleSheet.create({
@@ -152,6 +181,12 @@ export default function feedback() {
                         enterKeyHint="done"
                     />
                 </View>
+
+                <View style={[styles.errorTextContainer, {display: errorMsg == '' ? 'none' : 'flex'} ]}>
+                    <Text style={{color: '#de2341', fontSize: 16}}>
+                        {errorMsg}
+                    </Text>
+                </View>
             </ScrollView>
 
             <View style={{marginBottom: 20, paddingHorizontal: 16}}>
@@ -196,7 +231,7 @@ const styles = StyleSheet.create({
     inputContainer: {
       // flexDirection: 'row',
       // padding: 16,
-      borderBottomWidth: 1,
+    //   borderBottomWidth: 1,
     },
     btnContainer: {
       padding: 7,
@@ -206,6 +241,15 @@ const styles = StyleSheet.create({
       fontSize: 20,
       textAlign: 'center',
       textTransform: 'uppercase'
+    },
+
+    errorTextContainer: {
+        marginVertical: 16,
+        padding: 16,
+        backgroundColor: "#de234220",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#de234240'
     }
 });
   

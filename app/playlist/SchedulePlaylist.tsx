@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as Notifications from "expo-notifications";
 
 import Toast from 'react-native-root-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import Colors from '@/constants/Colors';
 import { _Playlists_, notificationData } from '@/constants/modelTypes';
 import { AppDispatch, RootState } from '@/state/store';
-import { schedulePlaylist } from '@/state/slices/playlistSlice';
+import { offPreviousScheduledPlaylist, schedulePlaylist } from '@/state/slices/playlistSlice';
 import { schedulePushNotification } from '@/constants/notifications';
 import BackButtonArrow from '@/components/BackButtonArrow';
 
@@ -26,12 +27,18 @@ export default function ScheduleAlert() {
         if (scheduleAlertStatus) {
             const hourz = _hours || Number(_hours) > 0 ? Number(_hours) : 0;
             const minutez = _minutes || Number(_minutes) > 0 ? Number(_minutes) : 0;
-            if (!hourz && minutez < 10) {
+            if (!hourz && minutez < 1) {
                 setError(true);
                 return;
             } else {
                 setError(false);
             }
+
+            // Cancel All Scheduled Notifications
+            Notifications.cancelAllScheduledNotificationsAsync();
+            // set the status of all other playlist to FALSE
+            dispatch(offPreviousScheduledPlaylist(''));
+
 
             dispatch(schedulePlaylist({
                 title: playlists.title,
@@ -59,7 +66,7 @@ export default function ScheduleAlert() {
 
             schedulePushNotification(newNotificationData);
 
-            const msg = `${playlists.title} scheduled to play every ${_hours} _hour(s):${_minutes} minutes`;
+            const msg = `${playlists.title} scheduled to play every ${_hours ? _hours + ' hour(s) ' : ''} :${_minutes} minutes`;
             let toast = Toast.show(msg, {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,

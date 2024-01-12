@@ -65,7 +65,6 @@ export default function ViewPlaylist() {
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
     Notifications.dismissAllNotificationsAsync();
-    // Notifications.dismissNotificationAsync();
 
     if (
       lastNotificationResponse &&
@@ -82,17 +81,17 @@ export default function ViewPlaylist() {
 
       setPlaylists(notificationPlaylist);
       setHighlightedVerse(notificationBibleVerse);
-
-      scheduleNextNotification(
-        allPlaylist_,
-        notificationPlaylist,
-        notificationBibleVerse,
-        notificationSchedule
-      );
+      _play_(notificationBibleVerse);
       
       setTimeout(() => {
-        _play_(notificationBibleVerse);
+        scheduleNextNotification(
+          allPlaylist_,
+          notificationPlaylist,
+          notificationBibleVerse,
+          notificationSchedule
+        );
       }, 500);
+
     }
   }, [lastNotificationResponse]);
   

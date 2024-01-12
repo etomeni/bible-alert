@@ -37,7 +37,7 @@ const BookVerses = () => {
             setVerses(_selected.verses);
             setSelected_Bible(_selected.bible);
 
-            dispatch(setSelectedChapter(_chapter_));
+            // dispatch(setSelectedChapter(_chapter_));
         } else {
             const _selected = getBibleBookVerses(
                 Bible,

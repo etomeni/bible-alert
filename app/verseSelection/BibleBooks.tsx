@@ -14,13 +14,14 @@ import { _bibleBookSelection_ } from "@/constants/modelTypes";
 import AllBibleBooks from "@/components/AllBibleBooks";
 import NewBibleBooks from "@/components/NewBibleBooks";
 import OldBibleBooks from "@/components/OldTBibleBooks";
-
+import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 
 
 const newTestamentBooks = restructureBibleDataset(bibleKJV.new);
 const oldTestamentBooks = restructureBibleDataset(bibleKJV.old);
 
 const BibleBooks = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const [activeTab, setActiveTab] = useState<'all' | 'old' | 'new'>('all');
     const selectedBibleBookRedux = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
@@ -30,11 +31,19 @@ const BibleBooks = () => {
     const [allBibleBooks, setAllBibleBooks] = useState(restructureBibleDataset());
 
     const onSelectBook = (book: _bibleBookSelection_) => {
-        const _book_ = {
-            book_name: book.book_name, 
-            book_number: book.book_number
-        };
-        router.push({ pathname: '/verseSelection/BookChapters', params: _book_ });
+        dispatch(set_SelectedBible({
+            book_name: book.book_name,
+            book: book.book_number,
+            chapter: selectedBibleBookRedux.chapter,
+            verse: selectedBibleBookRedux.verse
+        }));
+        router.push({ 
+            pathname: '/verseSelection/BookChapters', 
+            params: {
+                book_name: book.book_name, 
+                book_number: book.book_number
+            } 
+        });
     }
 
     const searchBibleBooksFunc = (text: string) => {

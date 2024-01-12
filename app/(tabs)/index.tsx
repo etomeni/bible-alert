@@ -19,6 +19,7 @@ import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import bible_KJV from "@/assets/bible/kjvTS";
 
 
+// USE this function to implement JESUS words in red text
 export function formatBibleVerseToDisplay(str: string) {
   const modifiedText = str.replace(/\u2039(.*?)\u203a/g, (match, p1) => {
     return `<red>${p1}</red>`;
@@ -30,7 +31,9 @@ export function formatBibleVerseToDisplay(str: string) {
     <Text>
       {parts.map((part, index) =>
         part.startsWith('<red>') ? (
-          <Text key={index} style={{ color: 'red' }}>
+          // UNCOMMENT THIS LINE BELOW TO IMPLEMENT JESUS WORDS IN RED TEXT
+          // <Text key={index} style={{ color: 'red' }}> //
+          <Text key={index}>
             {part.substring(5, part.length - 6)}
           </Text>
         ) : (

@@ -15,8 +15,9 @@ import { EventRegister } from 'react-native-event-listeners'
 
 import { LogBox } from 'react-native';
 import { getLocalStorage } from '@/constants/resources';
-import { _Playlists_, settingsInterface } from '@/constants/modelTypes';
+import { _Playlists_, bibleInterface, scheduleInterface, settingsInterface } from '@/constants/modelTypes';
 import BackButtonArrow from '@/components/BackButtonArrow';
+import { scheduleNextNotification } from '@/constants/notifications';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 // LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -83,6 +84,28 @@ function handleNotificationNavigations() {
         redirect(response?.notification);
       });
 
+    const _subscription = Notifications.addNotificationReceivedListener(
+      (event) => {
+        // event.request.content
+        const notificationData = event.request.content.data;
+        const notificationPlaylist: _Playlists_ = notificationData.playlist;
+        const notificationBibleVerse: bibleInterface = notificationData.bibleVerse;
+        const notificationSchedule: scheduleInterface = notificationData.schedule;
+
+        getLocalStorage("playlists").then((res) => {
+          if (res) {
+            scheduleNextNotification(
+              res,
+              notificationPlaylist,
+              notificationBibleVerse,
+              notificationSchedule
+            );
+          }
+        });
+    
+      }
+    );
+
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       redirect(response.notification);
     });
@@ -90,6 +113,7 @@ function handleNotificationNavigations() {
     return () => {
       isMounted = false;
       subscription.remove();
+      _subscription.remove();
     };
   }, []);
 }
@@ -134,7 +158,7 @@ function RootLayoutNav() {
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="verseSelection/BibleBooks" options={{ 
-                presentation: 'modal',
+                // presentation: 'modal',
                 title: "Choose a book of the Bible",
                 // headerShadowVisible: false,
                 headerTitleStyle:  { fontSize: 24 },
@@ -143,7 +167,7 @@ function RootLayoutNav() {
                 )
               }} />
               <Stack.Screen name="verseSelection/BookChapters" options={{ 
-                presentation: 'modal',
+                // presentation: 'modal',
                 title: "Chapters",
                 headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (
@@ -151,7 +175,7 @@ function RootLayoutNav() {
                 ),
               }} />
               <Stack.Screen name="verseSelection/BookVerses" options={{ 
-                presentation: 'modal',
+                // presentation: 'modal',
                 title: "Verses",
                 headerTitleStyle:  { fontSize: 24 },
                 headerLeft: () => (

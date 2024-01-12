@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
 import Colors from "@/constants/Colors";
-import { setSelectedBibleBook, setSelectedChapter } from "@/state/slices/bibleSelectionSlice";
+import { setSelectedBibleBook, setSelectedChapter, set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 import { getBibleBookChapters } from "@/constants/bibleResource";
 import { _bibleVerseSelection_ } from "@/constants/modelTypes";
 
@@ -28,23 +28,25 @@ const BookChapters = () => {
             const book_name: any = queryParams.book_name;
             setChapters(getBibleBookChapters( book_number > 39 ? bibleKJV.new : bibleKJV.old, book_name));
 
-            dispatch(setSelectedBibleBook({
-                book_name: book_name, 
-                book_number: book_number
-            }));
+            // dispatch(setSelectedBibleBook({
+            //     book_name: book_name, 
+            //     book_number: book_number
+            // }));
             // dispatch(setTemptBibleBookSelectionData(book));
         } else {
             setChapters(getBibleBookChapters( pSelected_BibleBook.book > 39 ? bibleKJV.new : bibleKJV.old, pSelected_BibleBook.book_name));
         }
     }, []);
 
-    // const chapters = getBibleBookChapters( selectedBibleBook.book > 39 ? bibleKJV.new : bibleKJV.old, selectedBibleBook.book_name); // 'Genesis'
-      
+
     const onSelectBook = (chapter: number) => {
+        dispatch(set_SelectedBible({
+            book_name: pSelected_BibleBook.book_name,
+            book: pSelected_BibleBook.book,
+            chapter: chapter,
+            verse: pSelected_BibleBook.verse
+        }));
         router.push({ pathname: '/verseSelection/BookVerses', params: {chapter} });
-
-
-        // dispatch(setSelectedChapter(chapter));
 
         // dispatch(setTemptBibleVerseSelectionData(chapter));
         // router.push("/verseSelection/BookVerses");
