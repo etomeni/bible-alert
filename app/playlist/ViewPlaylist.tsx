@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack } from 'expo-router';
 import * as Speech from 'expo-speech';
+import * as Notifications from 'expo-notifications';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
@@ -24,6 +25,7 @@ import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
 import { bibleVerseToRead, shareBibleVerse } from '@/constants/bibleResource';
 import { formatBibleVerseToDisplay } from '../(tabs)';
+import { handleAdd_Delete_PlaylistNotification } from '@/constants/notifications';
 
 
 export default function ViewPlaylist() {
@@ -77,6 +79,10 @@ export default function ViewPlaylist() {
   const onDeletePlaylist = () => {
     dispatch(deletePlaylist(playlists));
     
+    if (playlists.schedule?.status) {
+      Notifications.cancelAllScheduledNotificationsAsync();
+    }
+
     const msg = `${ playlists.title } deleted from playlist`;
     let toast = Toast.show(msg, {
       duration: Toast.durations.LONG,
@@ -96,6 +102,18 @@ export default function ViewPlaylist() {
       title: playlists.title,
       bibleVerse: item
     }));
+
+    const newList = playlists.lists.filter(
+      (fliterItem) =>
+        fliterItem.book !== item.book ||
+        fliterItem.chapter !== item.chapter ||
+        fliterItem.verse !== item.verse
+    );
+    const _temptPlaylist = playlists;
+    _temptPlaylist.lists = newList;
+    setTimeout(() => {
+      handleAdd_Delete_PlaylistNotification(_temptPlaylist);
+    }, 500);
 
     const msg = `${ item.book_name } ${ item.chapter }:${ item.verse } removed from playlist.`;
     let toast = Toast.show(msg, {

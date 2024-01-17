@@ -16,9 +16,9 @@ import { updateSettings } from '@/state/slices/settingsSlice';
 import Colors from '@/constants/Colors';
 import { restoreBookmark } from '@/state/slices/bookmarkSlice';
 import { restorePlaylists } from '@/state/slices/playlistSlice';
-import { scheduleBackgroundNotification } from '@/constants/notifications';
+// import { scheduleBackgroundNotification } from '@/constants/notifications';
 
-scheduleBackgroundNotification();
+// scheduleBackgroundNotification();
 
 export default function TabLayout() {
   const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
@@ -118,7 +118,7 @@ export default function TabLayout() {
                       numberOfLines={1}
                       ellipsizeMode='tail'
                     > { selectedBibleBook.book_name } </Text>
-                    <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
+                    <MaterialIcons name="keyboard-arrow-down" size={18} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
 
@@ -215,7 +215,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   indexSelectionText: {
-    textAlign: 'justify',
-    fontSize: 20
+    // textAlign: 'justify',
+    fontSize: 18
   }
+
+
 });

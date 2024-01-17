@@ -73,7 +73,7 @@ export type notificationData = {
 };
 
 export type _bibleVerseSelection_ = {
-  chapter_number: number;
+  chapter_number: number | string;
   total_verses: number;
 };
 

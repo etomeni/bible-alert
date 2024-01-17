@@ -5,43 +5,48 @@ import { StatusBar } from "expo-status-bar";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { useSelector, useDispatch } from 'react-redux';
-import bibleKJV from "@/assets/bible/kjvTS";
+// import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from '@/state/store';
-import { restructureBibleDataset } from "@/constants/bibleResource";
+// import { restructureBibleDataset } from "@/constants/bibleResource";
 import Colors from "@/constants/Colors";
 
 import { _bibleBookSelection_ } from "@/constants/modelTypes";
 import AllBibleBooks from "@/components/AllBibleBooks";
 import NewBibleBooks from "@/components/NewBibleBooks";
 import OldBibleBooks from "@/components/OldTBibleBooks";
-import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
+import BibleBooksChaptersVerses from "@/assets/bible/BibleBooksChaptersVerses";
+// import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 
 
-const newTestamentBooks = restructureBibleDataset(bibleKJV.new);
-const oldTestamentBooks = restructureBibleDataset(bibleKJV.old);
+// const newTestamentBooks = restructureBibleDataset(bibleKJV.new);
+// const oldTestamentBooks = restructureBibleDataset(bibleKJV.old);
+
+const oldTestamentBooks = BibleBooksChaptersVerses.slice(0, 39);
+const newTestamentBooks = BibleBooksChaptersVerses.slice(39);
 
 const BibleBooks = () => {
-    const dispatch = useDispatch<AppDispatch>();
+    // const dispatch = useDispatch<AppDispatch>();
     const [activeTab, setActiveTab] = useState<'all' | 'old' | 'new'>('all');
     const selectedBibleBookRedux = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
     const [bookNameInputValue, setBookNameInputValue] = useState('');
     const [searching, setSearching] = useState(false);
 
-    const [allBibleBooks, setAllBibleBooks] = useState(restructureBibleDataset());
+    const [allBibleBooks, setAllBibleBooks] = useState(BibleBooksChaptersVerses);
 
     const onSelectBook = (book: _bibleBookSelection_) => {
-        dispatch(set_SelectedBible({
-            book_name: book.book_name,
-            book: book.book_number,
-            chapter: selectedBibleBookRedux.chapter,
-            verse: selectedBibleBookRedux.verse
-        }));
+        // dispatch(set_SelectedBible({
+        //     book_name: book.book_name,
+        //     book: book.book_number,
+        //     chapter: selectedBibleBookRedux.chapter,
+        //     verse: selectedBibleBookRedux.verse
+        // }));
         router.push({ 
             pathname: '/verseSelection/BookChapters', 
             params: {
                 book_name: book.book_name, 
-                book_number: book.book_number
+                book_number: book.book_number,
+                total_chapters: book.total_chapters
             } 
         });
     }
@@ -57,7 +62,7 @@ const BibleBooks = () => {
             const searchKeyWords = text.toLowerCase();
             // OPTIMIZED WAY OF PERFORMING SEARCH LIMITS
             const _search_Results = [];
-            for (const obj of restructureBibleDataset()) {
+            for (const obj of allBibleBooks) {
                 const searchFields = obj.book_name.toLowerCase();
                 if (searchFields.includes(searchKeyWords)) {
                     _search_Results.push(obj);
@@ -67,7 +72,7 @@ const BibleBooks = () => {
             setAllBibleBooks(_search_Results);
         } else {
             setSearching(false);
-            setAllBibleBooks(restructureBibleDataset());
+            setAllBibleBooks(BibleBooksChaptersVerses);
         }
     }
 

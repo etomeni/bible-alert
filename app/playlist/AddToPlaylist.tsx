@@ -12,6 +12,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
 import { addToPlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
+import { handleAdd_Delete_PlaylistNotification } from '@/constants/notifications';
 
 
 export default function AddToPlaylist() {
@@ -71,7 +72,19 @@ export default function AddToPlaylist() {
         title: playlist.title,
         bibleVerse: temptData.temptBibleVerse
       }));
-  
+
+      const newList = playlist.lists.filter(
+        (item) =>
+          item.book !== temptData.temptBibleVerse.book ||
+          item.chapter !== temptData.temptBibleVerse.chapter ||
+          item.verse !== temptData.temptBibleVerse.verse
+      );
+
+      const _temptPlaylist = playlist;
+      _temptPlaylist.lists = newList;
+      setTimeout(() => {
+        handleAdd_Delete_PlaylistNotification(_temptPlaylist);
+      }, 500);
 
       const msg = `${temptData.temptBibleVerse.book_name} ${temptData.temptBibleVerse.chapter}:${temptData.temptBibleVerse.verse} has been added to ${playlist.title} playlist already!`;
       let toast = Toast.show(msg, {
@@ -87,7 +100,13 @@ export default function AddToPlaylist() {
         title: playlist.title,
         bibleVerse: temptData.temptBibleVerse
       }));
-  
+
+      const _temptPlaylist = playlist;
+      _temptPlaylist.lists.push(temptData.temptBibleVerse);
+      setTimeout(() => {
+        handleAdd_Delete_PlaylistNotification(_temptPlaylist);
+      }, 500);
+
       const msg = `${temptData.temptBibleVerse.book_name} ${temptData.temptBibleVerse.chapter}:${temptData.temptBibleVerse.verse} added to ${playlist.title} playlist!`;
       let toast = Toast.show(msg, {
           duration: Toast.durations.LONG,

@@ -70,16 +70,39 @@ const playlistSlice = createSlice({
 
       return state;
     },
-    offPreviousScheduledPlaylist: (state, action: PayloadAction<any>) => {
+    newScheduledPlaylist: (state, action: PayloadAction<_Playlists_>) => {
       const newState = state.map((obj) => {
-        if (obj.schedule?.status == true) {
-          obj.schedule.hourIntervals = "";
-          obj.schedule.minutesIntervals = "";
-          obj.schedule.status = false;
+        if (action.payload.title == obj.title) {
+          obj.schedule = action.payload.schedule;
+        } else {
+          if (obj.schedule?.status == true) {
+            obj.schedule.hourIntervals = "";
+            obj.schedule.minutesIntervals = "";
+            obj.schedule.status = false;
+          }
         }
         return obj;
       });
 
+      setLocalStorage("playlists", newState);
+      return newState;
+    },
+    offPreviousScheduledPlaylist: (
+      state,
+      action: PayloadAction<_Playlists_>
+    ) => {
+      const newState = state.map((obj) => {
+        if (action.payload.title != obj.title) {
+          if (obj.schedule?.status == true) {
+            obj.schedule.hourIntervals = "";
+            obj.schedule.minutesIntervals = "";
+            obj.schedule.status = false;
+          }
+        }
+        return obj;
+      });
+
+      setLocalStorage("playlists", newState);
       return newState;
     },
     addToPlaylist: (state, action: PayloadAction<_playlistInterface_>) => {
@@ -166,6 +189,7 @@ export const {
   restorePlaylists,
   schedulePlaylist,
   offPreviousScheduledPlaylist,
+  newScheduledPlaylist,
   initializePlaylists,
   deletePlaylist,
 } = playlistSlice.actions;

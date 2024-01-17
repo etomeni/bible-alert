@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
-import { setSelectedChapter, setSelectedVerse, set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
+import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 import Colors from "@/constants/Colors";
 import { bibleDetails } from "@/state/slices/bibleVerseSlice";
 import { getBibleBookVerses } from "@/constants/resources";
@@ -24,10 +24,25 @@ const BookVerses = () => {
     const [verses, setVerses] = useState<any>([]);
     const [selected_Bible, setSelected_Bible] = useState<bibleInterface[]>([]);
 
+    const [selected_data, setSelected_data] = useState({
+        book_number: 0,
+        book_name: '',
+        chapter: 0,
+    });
 
     useEffect(() => {
         if (queryParams.chapter) {
+            // const _chapter_ = Number(queryParams.chapter);
+            const book_name: any = queryParams.book_name;
+            const book_number = Number(queryParams.book_number);
             const _chapter_ = Number(queryParams.chapter);
+            const total_verses = Number(queryParams.total_verses);
+
+            setSelected_data({
+                book_number: book_number,
+                book_name: book_name,
+                chapter: _chapter_,
+            });
 
             const _selected = getBibleBookVerses(
                 Bible,
@@ -39,11 +54,17 @@ const BookVerses = () => {
 
             // dispatch(setSelectedChapter(_chapter_));
         } else {
+            setSelected_data({
+                book_number: selectedBibleBook.book,
+                book_name: selectedBibleBook.book_name,
+                chapter: selectedBibleBook.chapter
+            });    
+
             const _selected = getBibleBookVerses(
                 Bible,
                 selectedBibleBook.book_name,
                 selectedBibleBook.chapter,
-            ); // 'Genesis'
+            ); // 'Genesis'        
 
             setVerses(_selected.verses);
             setSelected_Bible(_selected.bible);
@@ -53,9 +74,9 @@ const BookVerses = () => {
 
     const onSelectBook = (verse: number) => {
         dispatch(set_SelectedBible({
-            book_name: selectedBibleBook.book_name,
-            book: selectedBibleBook.book,
-            chapter: selectedBibleBook.chapter,
+            book_name: selected_data.book_name,
+            book: selected_data.book_number,
+            chapter: selected_data.chapter,
             verse: verse,
         }));
 

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Colors from '@/constants/Colors';
 import { _Playlists_, notificationData } from '@/constants/modelTypes';
 import { AppDispatch, RootState } from '@/state/store';
-import { offPreviousScheduledPlaylist, schedulePlaylist } from '@/state/slices/playlistSlice';
+import { newScheduledPlaylist, offPreviousScheduledPlaylist, schedulePlaylist } from '@/state/slices/playlistSlice';
 import { schedulePushNotification } from '@/constants/notifications';
 import BackButtonArrow from '@/components/BackButtonArrow';
 
@@ -23,7 +23,7 @@ export default function ScheduleAlert() {
     const [_minutes, _setMinutes] = useState(playlists.schedule?.minutesIntervals || '');
     const [error, setError] = useState(false);
 
-    const savePlaylistSchedule = () => {
+    const savePlaylistSchedule = async () => {
         if (scheduleAlertStatus) {
             const hourz = _hours || Number(_hours) > 0 ? Number(_hours) : 0;
             const minutez = _minutes || Number(_minutes) > 0 ? Number(_minutes) : 0;
@@ -34,13 +34,10 @@ export default function ScheduleAlert() {
                 setError(false);
             }
 
-            // Cancel All Scheduled Notifications
-            Notifications.cancelAllScheduledNotificationsAsync();
             // set the status of all other playlist to FALSE
-            dispatch(offPreviousScheduledPlaylist(''));
-
-
-            dispatch(schedulePlaylist({
+            // dispatch(offPreviousScheduledPlaylist(playlists));
+            dispatch(newScheduledPlaylist({
+                ...playlists,
                 title: playlists.title,
                 schedule: { 
                     // ...playlists.schedule,
@@ -50,21 +47,66 @@ export default function ScheduleAlert() {
                 },
             }));
 
-            const newNotificationData: notificationData = {
-                title: playlists.title,
-                // msg: "Here is the notification body", 
-                msg: `${playlists.lists[0].book_name + " " + playlists.lists[0].chapter + ":" + playlists.lists[0].verse } \n ${playlists.lists[0].text}`,
-                schedule: {
-                    hour: hourz,
-                    minute: minutez,
-                    repeats: scheduleAlertStatus
-                }, 
-                extraData: 'Extra data goes here...',
-                bibleVerse: playlists.lists[0],
-                playlistData: playlists
+            // Cancel All Scheduled Notifications
+            await Notifications.cancelAllScheduledNotificationsAsync();
+
+            // dispatch(schedulePlaylist({
+            //     title: playlists.title,
+            //     schedule: { 
+            //         // ...playlists.schedule,
+            //         status: scheduleAlertStatus,
+            //         hourIntervals: _hours,
+            //         minutesIntervals: _minutes,
+            //     },
+            // }));
+
+
+            // let totalSeconds = 0;
+            // const maxYearSeconds = 365 * 24 * 60 * 60; // Seconds in a year
+            // // const _sec = minutez * 60 + hourz * 3600;
+            let currentIndex = 0;
+            // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
+            for (let i = 0; i < 500; i++) {
+                const _incremental = i+1;
+                // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
+                // totalSeconds += _sec;
+
+                currentIndex = (currentIndex + 1) % playlists.lists.length;
+
+                const newNotificationData: notificationData = {
+                    title: playlists.title,
+                    // msg: "Here is the notification body", 
+                    msg: `${playlists.lists[currentIndex].book_name + " " + playlists.lists[currentIndex].chapter + ":" + playlists.lists[currentIndex].verse } \n ${playlists.lists[currentIndex].text}`,
+                    schedule: {
+                        hour: hourz * _incremental,
+                        minute: minutez * _incremental,
+                        repeats: scheduleAlertStatus
+                    }, 
+                    extraData: 'Extra data goes here...',
+                    bibleVerse: playlists.lists[currentIndex],
+                    playlistData: playlists
+                }
+
+                const identifier = `${playlists.lists[currentIndex].book_name}${playlists.lists[currentIndex].chapter}${playlists.lists[currentIndex].verse}_${_incremental}`;
+                schedulePushNotification(newNotificationData, identifier);
+                // console.log(_incremental);
             }
 
-            schedulePushNotification(newNotificationData);
+            // const newNotificationData: notificationData = {
+            //     title: playlists.title,
+            //     // msg: "Here is the notification body", 
+            //     msg: `${playlists.lists[0].book_name + " " + playlists.lists[0].chapter + ":" + playlists.lists[0].verse } \n ${playlists.lists[0].text}`,
+            //     schedule: {
+            //         hour: hourz,
+            //         minute: minutez,
+            //         repeats: scheduleAlertStatus
+            //     }, 
+            //     extraData: 'Extra data goes here...',
+            //     bibleVerse: playlists.lists[0],
+            //     playlistData: playlists
+            // }
+
+            // schedulePushNotification(newNotificationData);
 
             const msg = `${playlists.title} scheduled to play every ${_hours ? _hours + ' hour(s) ' : ''} :${_minutes} minutes`;
             let toast = Toast.show(msg, {
@@ -86,9 +128,10 @@ export default function ScheduleAlert() {
                     minutesIntervals: '',
                 },
             }));
-
-            // TODO::::::
-            // remove every scheduled notification if there be any
+            if (playlists.schedule?.status) {
+                Notifications.cancelAllScheduledNotificationsAsync();
+                Notifications.dismissAllNotificationsAsync();
+            }
         }
         router.back();
     }
