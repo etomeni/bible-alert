@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity,
   Pressable, FlatList, Image
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Link, useNavigation } from "expo-router";
+import { Link, router } from "expo-router";
 import Toast from 'react-native-root-toast';
 
 import { useDispatch, useSelector } from "react-redux";
@@ -12,13 +12,12 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
 import { addToPlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
-import { handleAdd_Delete_PlaylistNotification } from '@/constants/notifications';
+import { handleAdd_Delete_PlaylistNotification, restartPlaylistNotification } from '@/constants/notifications';
 
 
 export default function AddToPlaylist() {
   const [playlistNameValue, setPlaylistNameValue] = useState('');
   const dispatch = useDispatch<AppDispatch>();
-  const navigation: any = useNavigation();
   const settings = useSelector((state: RootState) => state.settings);
   const playlists = useSelector((state: RootState) => state.playlists);
   const temptData = useSelector((state: RootState) => state.temptData);
@@ -80,11 +79,10 @@ export default function AddToPlaylist() {
           item.verse !== temptData.temptBibleVerse.verse
       );
 
-      const _temptPlaylist = playlist;
-      _temptPlaylist.lists = newList;
-      setTimeout(() => {
-        handleAdd_Delete_PlaylistNotification(_temptPlaylist);
-      }, 500);
+      if (playlist.schedule?.status) {
+        const _temptPlaylist = {...playlist, lists: newList};
+        restartPlaylistNotification(_temptPlaylist);
+      }
 
       const msg = `${temptData.temptBibleVerse.book_name} ${temptData.temptBibleVerse.chapter}:${temptData.temptBibleVerse.verse} has been added to ${playlist.title} playlist already!`;
       let toast = Toast.show(msg, {
@@ -101,11 +99,11 @@ export default function AddToPlaylist() {
         bibleVerse: temptData.temptBibleVerse
       }));
 
-      const _temptPlaylist = playlist;
-      _temptPlaylist.lists.push(temptData.temptBibleVerse);
-      setTimeout(() => {
-        handleAdd_Delete_PlaylistNotification(_temptPlaylist);
-      }, 500);
+      if (playlist.schedule?.status) {
+        const _newTemptList: bibleInterface[] = [...playlist.lists, temptData.temptBibleVerse];
+        const _temptPlaylist = {...playlist, lists: _newTemptList};
+        restartPlaylistNotification(_temptPlaylist);
+      }
 
       const msg = `${temptData.temptBibleVerse.book_name} ${temptData.temptBibleVerse.chapter}:${temptData.temptBibleVerse.verse} added to ${playlist.title} playlist!`;
       let toast = Toast.show(msg, {
@@ -118,7 +116,7 @@ export default function AddToPlaylist() {
       });
     }
 
-    navigation.navigate('playlist');
+    router.push('/playlist')
   }
 
   const themeStyles = StyleSheet.create({

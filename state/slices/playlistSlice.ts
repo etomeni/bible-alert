@@ -73,12 +73,18 @@ const playlistSlice = createSlice({
     newScheduledPlaylist: (state, action: PayloadAction<_Playlists_>) => {
       const newState = state.map((obj) => {
         if (action.payload.title == obj.title) {
-          obj.schedule = action.payload.schedule;
+          // obj.schedule = action.payload.schedule;
+          const newObj = { ...obj, schedule: action.payload.schedule };
+          return newObj;
         } else {
-          if (obj.schedule?.status == true) {
-            obj.schedule.hourIntervals = "";
-            obj.schedule.minutesIntervals = "";
-            obj.schedule.status = false;
+          if (obj.schedule?.status) {
+            const _schedule = {
+              hourIntervals: "",
+              minutesIntervals: "",
+              status: false,
+            };
+            const newObj = { ...obj, schedule: _schedule };
+            return newObj;
           }
         }
         return obj;

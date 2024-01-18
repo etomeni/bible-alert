@@ -26,7 +26,7 @@ import bible_KJV from "@/assets/bible/kjvTS";
 import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
 import Loading from '@/components/Loading';
-import { handleAdd_Delete_PlaylistNotification, scheduleNextNotification } from '@/constants/notifications';
+import { handleAdd_Delete_PlaylistNotification, restartPlaylistNotification, scheduleNextNotification } from '@/constants/notifications';
 import { bibleVerseToRead, shareBibleVerse } from '@/constants/bibleResource';
 
 
@@ -56,12 +56,6 @@ export default function ViewPlaylist() {
   const { dismiss } = useBottomSheetModal();
   const playlistInfoRef = useRef<BottomSheetModal>(null);
 
-  // useEffect(() => {
-  //   Notifications.dismissAllNotificationsAsync();
-  //   // Notifications.dismissNotificationAsync();
-  // }, []);
-  
-
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
     Notifications.dismissAllNotificationsAsync();
@@ -83,14 +77,14 @@ export default function ViewPlaylist() {
       setHighlightedVerse(notificationBibleVerse);
       _play_(notificationBibleVerse);
       
-      setTimeout(() => {
-        scheduleNextNotification(
-          allPlaylist_,
-          notificationPlaylist,
-          notificationBibleVerse,
-          notificationSchedule
-        );
-      }, 500);
+      // setTimeout(() => {
+      //   scheduleNextNotification(
+      //     allPlaylist_,
+      //     notificationPlaylist,
+      //     notificationBibleVerse,
+      //     notificationSchedule
+      //   );
+      // }, 500);
 
     }
   }, [lastNotificationResponse]);
@@ -113,7 +107,6 @@ export default function ViewPlaylist() {
     }
 
     Speech.speak(thingToSay, _speechOptions);
-    setIsPlaying(true);
   }
 
   const onClickPlaylist_Item = (item: bibleInterface) => {
@@ -143,6 +136,7 @@ export default function ViewPlaylist() {
 
     if (playlists.schedule?.status) {
       Notifications.cancelAllScheduledNotificationsAsync();
+      Notifications.dismissAllNotificationsAsync();
     }
 
     const msg = `${ playlists.title } deleted from playlist`;
@@ -172,11 +166,11 @@ export default function ViewPlaylist() {
         fliterItem.chapter !== item.chapter ||
         fliterItem.verse !== item.verse
     );
-    const _temptPlaylist = playlists;
-    _temptPlaylist.lists = newList;
-    setTimeout(() => {
-      handleAdd_Delete_PlaylistNotification(_temptPlaylist);
-    }, 500);
+    
+    if (playlists.schedule?.status) {
+      const _temptPlaylist = {...playlists, lists: newList};
+      restartPlaylistNotification(_temptPlaylist);
+    }
 
     const msg = `${ item.book_name } ${ item.chapter }:${ item.verse } removed from playlist.`;
     let toast = Toast.show(msg, {

@@ -213,6 +213,54 @@ export function handleAdd_Delete_PlaylistNotification(
   }
 }
 
+export async function restartPlaylistNotification(new_Playlist: _Playlists_) {
+  const hourz =
+    Number(new_Playlist.schedule?.hourIntervals) > 0
+      ? Number(new_Playlist.schedule?.hourIntervals)
+      : 0;
+  const minutez =
+    Number(new_Playlist.schedule?.minutesIntervals) > 0
+      ? Number(new_Playlist.schedule?.minutesIntervals)
+      : 0;
+
+  // Cancel All Scheduled Notifications
+  await Notifications.cancelAllScheduledNotificationsAsync();
+
+  let currentIndex = 0;
+  // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
+  for (let i = 0; i < 500; i++) {
+    const _incremental = i + 1;
+    // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
+    // totalSeconds += _sec;
+
+    currentIndex = (currentIndex + 1) % new_Playlist.lists.length;
+
+    const newNotificationData: notificationData = {
+      title: new_Playlist.title,
+      // msg: "Here is the notification body",
+      msg: `${
+        new_Playlist.lists[currentIndex].book_name +
+        " " +
+        new_Playlist.lists[currentIndex].chapter +
+        ":" +
+        new_Playlist.lists[currentIndex].verse
+      } \n ${new_Playlist.lists[currentIndex].text}`,
+      schedule: {
+        hour: hourz * _incremental,
+        minute: minutez * _incremental,
+        repeats: new_Playlist.schedule?.status || false,
+      },
+      extraData: "Extra data goes here...",
+      bibleVerse: new_Playlist.lists[currentIndex],
+      playlistData: new_Playlist,
+    };
+
+    const identifier = `${new_Playlist.lists[currentIndex].book_name}${new_Playlist.lists[currentIndex].chapter}${new_Playlist.lists[currentIndex].verse}_${_incremental}`;
+    schedulePushNotification(newNotificationData, identifier);
+    // console.log(_incremental);
+  }
+}
+
 export function handleNotificationNavigations() {
   let isMounted = true;
 

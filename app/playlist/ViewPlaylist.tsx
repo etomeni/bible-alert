@@ -25,7 +25,7 @@ import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
 import { bibleVerseToRead, shareBibleVerse } from '@/constants/bibleResource';
 import { formatBibleVerseToDisplay } from '../(tabs)';
-import { handleAdd_Delete_PlaylistNotification } from '@/constants/notifications';
+import { handleAdd_Delete_PlaylistNotification, restartPlaylistNotification } from '@/constants/notifications';
 
 
 export default function ViewPlaylist() {
@@ -81,6 +81,7 @@ export default function ViewPlaylist() {
     
     if (playlists.schedule?.status) {
       Notifications.cancelAllScheduledNotificationsAsync();
+      Notifications.dismissAllNotificationsAsync();
     }
 
     const msg = `${ playlists.title } deleted from playlist`;
@@ -109,11 +110,11 @@ export default function ViewPlaylist() {
         fliterItem.chapter !== item.chapter ||
         fliterItem.verse !== item.verse
     );
-    const _temptPlaylist = playlists;
-    _temptPlaylist.lists = newList;
-    setTimeout(() => {
-      handleAdd_Delete_PlaylistNotification(_temptPlaylist);
-    }, 500);
+    
+    if (playlists.schedule?.status) {
+      const _temptPlaylist = {...playlists, lists: newList};
+      restartPlaylistNotification(_temptPlaylist);
+    }
 
     const msg = `${ item.book_name } ${ item.chapter }:${ item.verse } removed from playlist.`;
     let toast = Toast.show(msg, {

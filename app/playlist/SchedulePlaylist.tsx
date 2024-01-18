@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -22,8 +22,11 @@ export default function ScheduleAlert() {
     const [_hours, _setHours] = useState(playlists.schedule?.hourIntervals || '');
     const [_minutes, _setMinutes] = useState(playlists.schedule?.minutesIntervals || '');
     const [error, setError] = useState(false);
+    const [btnLoadingState, setBtnLoadingState] = useState(false);
 
     const savePlaylistSchedule = async () => {
+        setBtnLoadingState(true);
+
         if (scheduleAlertStatus) {
             const hourz = _hours || Number(_hours) > 0 ? Number(_hours) : 0;
             const minutez = _minutes || Number(_minutes) > 0 ? Number(_minutes) : 0;
@@ -66,7 +69,7 @@ export default function ScheduleAlert() {
             // // const _sec = minutez * 60 + hourz * 3600;
             let currentIndex = 0;
             // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
-            for (let i = 0; i < 500; i++) {
+            for (let i = 0; i < 700; i++) {
                 const _incremental = i+1;
                 // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
                 // totalSeconds += _sec;
@@ -117,22 +120,23 @@ export default function ScheduleAlert() {
                 // hideOnPress: true,
                 // delay: 0,
             });
-      
         } else {
             dispatch(schedulePlaylist({
                 title: playlists.title,
                 schedule: { 
                     // ...playlists.schedule,
-                    status: scheduleAlertStatus,
+                    status: false,
                     hourIntervals: '',
                     minutesIntervals: '',
                 },
             }));
+
             if (playlists.schedule?.status) {
                 Notifications.cancelAllScheduledNotificationsAsync();
                 Notifications.dismissAllNotificationsAsync();
             }
         }
+        setBtnLoadingState(false);
         router.back();
     }
 
@@ -298,8 +302,14 @@ export default function ScheduleAlert() {
                     )
                 }
 
-                <TouchableOpacity style={styles.saveBtn} onPress={() => savePlaylistSchedule()}>
-                    <Text style={styles.btnText}>Save</Text>
+                <TouchableOpacity style={[styles.saveBtn, {backgroundColor: btnLoadingState ? Colors.primaryDark : Colors.primary}]} disabled={btnLoadingState} onPress={() => savePlaylistSchedule()}>
+                    <Text style={styles.btnText}>
+                        {
+                            btnLoadingState ? (
+                                <ActivityIndicator size="small" color="#fff" />
+                            ) : "Save"
+                        }
+                    </Text>
                 </TouchableOpacity>
             </View>
         </>
@@ -333,7 +343,7 @@ const styles = StyleSheet.create({
         marginBottom: 7
     },
     saveBtn: {
-        backgroundColor: Colors.primary, 
+        backgroundColor: Colors.primary,
         marginTop: 20, 
         padding: 15, 
         alignItems: 'center',
