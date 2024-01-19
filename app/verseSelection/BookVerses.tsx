@@ -31,7 +31,7 @@ const BookVerses = () => {
     useEffect(() => {
         if (queryParams.chapter) {
             // const _chapter_ = Number(queryParams.chapter);
-            const book_name: any = queryParams.book_name;
+            const book_name = queryParams.book_name.toString().trim();
             const book_number = Number(queryParams.book_number);
             const _chapter_ = Number(queryParams.chapter);
             const total_verses = Number(queryParams.total_verses);
@@ -44,7 +44,7 @@ const BookVerses = () => {
 
             const _selected = getBibleBookVerses(
                 book_number,
-                selectedBibleBook.book_name,
+                book_name,
                 _chapter_,
             );
             setVerses(_selected.verses);

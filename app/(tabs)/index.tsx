@@ -13,10 +13,9 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { bibleVerseDetails } from '@/state/slices/selectedBibleVerseModalSlice';
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { getBibleBookChapters, getBibleBookVerses, getBibleEndChapter } from '@/constants/bibleResource';
+import { getBibleBookVerses, getBibleEndChapter } from '@/constants/bibleResource';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
-import bible_KJV from "@/assets/bible/kjvTS";
 
 
 // USE this function to implement JESUS words in red text
@@ -108,10 +107,8 @@ export default function IndexScreen() {
       verse: 1,
     }));
 
-    const Bible: any = selected_BibleBook.book > 39 ? bible_KJV.new : bible_KJV.old;
-
     const _selected = getBibleBookVerses(
-      Bible,
+      selected_BibleBook.book,
       selected_BibleBook.book_name,
       newChapter,
     );

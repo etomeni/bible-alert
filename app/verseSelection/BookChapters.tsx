@@ -25,7 +25,7 @@ const BookChapters = () => {
     useEffect(() => {
         if (queryParams.book_name || queryParams.book_number ) {
             const book_number = Number(queryParams.book_number);
-            const book_name: any = queryParams.book_name;
+            const book_name = queryParams.book_name.toString().trim();
             const total_chapters = Number(queryParams.total_chapters);
             setChapters(BibleBooksChaptersVerses[book_number - 1].chapters);
 
@@ -45,6 +45,9 @@ const BookChapters = () => {
 
 
     const onSelectBook = (chapter: _bibleVerseSelection_) => {
+        const book_number = Number(queryParams.book_number);
+        const book_name = queryParams.book_name.toString();
+        
         router.push({ 
             pathname: '/verseSelection/BookVerses', 
             params: {

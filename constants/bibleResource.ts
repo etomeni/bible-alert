@@ -21,23 +21,18 @@ export function getBibleBookVerses(
 
   const _books: bibleInterface[] = bible.filter(
     (book: bibleInterface) =>
-      book.book_name === bookName && book.chapter == chapter
+      // book.book_name == bookName &&
+      book.book == bookNumber && book.chapter == chapter
   );
 
-  const uniqueBookVerses: number[] = _books.reduce(
-    (acc: any, book: bibleInterface) => {
-      const existingVerses = acc.find((b: any) => b === book.verse);
-      if (!existingVerses) {
-        acc.push(book.verse);
-      }
-      return acc;
-    },
-    []
-  );
+  const bookVerses: number[] = [];
+  _books.forEach((ele, index) => {
+    bookVerses.push(index + 1);
+  });
 
   return {
     bible: _books,
-    verses: uniqueBookVerses,
+    verses: bookVerses,
   };
 }
 

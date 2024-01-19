@@ -15,25 +15,19 @@ import { bibleInterface } from '@/constants/modelTypes';
 import Colors from '@/constants/Colors';
 import Toast from 'react-native-root-toast';
 
-import bibleKJV from "@/assets/bible/kjv_all";
-import bible_KJV from "@/assets/bible/kjvTS";
-
 import { Ionicons } from '@expo/vector-icons';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
-import { useNavigation } from "expo-router";
+import { router } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 
 
 export default function bookmark() {
-    const navigation: any = useNavigation();
-
     const dispatch = useDispatch<AppDispatch>();
     const _book_mark_ = useSelector((state: RootState) => state.bookmark);
     const settings = useSelector((state: RootState) => state.settings);
     const [bookmark, setBookmark] = useState<bibleInterface[]>(_book_mark_);
-    
-    
+
     useEffect(() => {
         setBookmark(_book_mark_);
     }, [_book_mark_]);
@@ -46,17 +40,15 @@ export default function bookmark() {
             verse: item.verse,
         }));
     
-        const Bible: any = item.book > 39 ? bible_KJV.new : bible_KJV.old;
-    
         const _selected = getBibleBookVerses(
-            Bible,
+            item.book,
             item.book_name,
             item.chapter,
         );
     
         dispatch(bibleDetails(_selected.bible));
-        navigation.navigate('index');
-        // navigation.navigate('(tabs)');
+        router.push('/(tabs)/')
+        // navigation.navigate('index');
     }
 
     const onDeleteBookmark = (item: bibleInterface) => {

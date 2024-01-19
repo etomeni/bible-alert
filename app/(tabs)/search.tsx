@@ -9,12 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/Colors';
 import bibleKJV from "@/assets/bible/kjv_all";
-import bible_KJV from "@/assets/bible/kjvTS";
 import { bibleInterface } from '@/constants/modelTypes';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 
-import { useNavigation } from "expo-router";
+import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
 import { getBibleBookVerses } from '@/constants/bibleResource';
@@ -33,10 +32,10 @@ function highlightSearchWord(searchResults: bibleInterface[], searchValue: strin
     // Map each part to Text component, bolding the matched query
     const formattedText = parts.map((part, index) => {
       return(
-        <Text>
+        <Text key={index}>
           {
             part.trim().toLowerCase() === searchKeyWord ? (
-              <Text key={index} style={{
+              <Text style={{
                 fontWeight: 'bold',
                 backgroundColor: Colors.primary,
                 color: 'white',
@@ -45,26 +44,13 @@ function highlightSearchWord(searchResults: bibleInterface[], searchValue: strin
                 { part }
               </Text>
             ) : (
-              <Text key={index}>
+              <Text>
                 { part }
                 {/* { formatBibleVerseToDisplay(part) } */}
               </Text>
             )
           }
         </Text>
-
-        // <Text key={index} style={
-        //   part.trim().toLowerCase() === searchKeyWord ? {
-        //     fontWeight: 'bold',
-        //     backgroundColor: Colors.primary,
-        //     color: 'white',
-        //     paddingHorizontal: 5
-        //   } : {
-        //     fontWeight: 'normal'
-        //   }
-        // }>
-        //   { part }
-        // </Text>
       );
     });
 
@@ -84,7 +70,6 @@ export default function SearchScreen() {
   const [searching, setSearching] = useState<'init' | 'seaching' | 'result'>('init');
   const settings = useSelector((state: RootState) => state.settings);
 
-  const navigation: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
 
   const searchFunc2 = () => {
@@ -171,17 +156,15 @@ export default function SearchScreen() {
       verse: _bible.verse,
     }));
 
-    const Bible: any = _bible.book > 39 ? bible_KJV.new : bible_KJV.old;
-
     const _selected = getBibleBookVerses(
-      Bible,
+      _bible.book,
       _bible.book_name,
       _bible.chapter,
     );
 
     dispatch(bibleDetails(_selected.bible));
-    navigation.navigate('index');
-    // navigation.navigate('(tabs)');
+    // navigation.navigate('index');
+    router.push('/(tabs)/');
   }
 
 

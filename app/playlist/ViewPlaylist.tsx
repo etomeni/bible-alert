@@ -19,7 +19,6 @@ import BackButtonArrow from '@/components/BackButtonArrow';
 import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
-import bible_KJV from "@/assets/bible/kjvTS";
 import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
 import { bibleVerseToRead, shareBibleVerse, getBibleBookVerses } from '@/constants/bibleResource';
@@ -63,10 +62,8 @@ export default function ViewPlaylist() {
       verse: item.verse,
     }));
 
-    const Bible: any = item.book > 39 ? bible_KJV.new : bible_KJV.old;
-
     const _selected = getBibleBookVerses(
-      Bible,
+      item.book,
       item.book_name,
       item.chapter,
     );
