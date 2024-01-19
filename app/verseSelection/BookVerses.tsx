@@ -3,12 +3,11 @@ import { StatusBar } from "expo-status-bar";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { useDispatch, useSelector } from "react-redux";
-import bibleKJV from "@/assets/bible/kjvTS";
 import { AppDispatch, RootState } from "@/state/store";
 import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
 import Colors from "@/constants/Colors";
 import { bibleDetails } from "@/state/slices/bibleVerseSlice";
-import { getBibleBookVerses } from "@/constants/resources";
+import { getBibleBookVerses } from "@/constants/bibleResource";
 import { useEffect, useState } from "react";
 import { bibleInterface } from "@/constants/modelTypes";
 
@@ -20,7 +19,6 @@ const BookVerses = () => {
     const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
 
-    const Bible: any = selectedBibleBook.book > 39 ? bibleKJV.new : bibleKJV.old;
     const [verses, setVerses] = useState<any>([]);
     const [selected_Bible, setSelected_Bible] = useState<bibleInterface[]>([]);
 
@@ -45,14 +43,13 @@ const BookVerses = () => {
             });
 
             const _selected = getBibleBookVerses(
-                Bible,
+                book_number,
                 selectedBibleBook.book_name,
                 _chapter_,
             );
             setVerses(_selected.verses);
             setSelected_Bible(_selected.bible);
 
-            // dispatch(setSelectedChapter(_chapter_));
         } else {
             setSelected_data({
                 book_number: selectedBibleBook.book,
@@ -61,10 +58,10 @@ const BookVerses = () => {
             });    
 
             const _selected = getBibleBookVerses(
-                Bible,
+                selectedBibleBook.book,
                 selectedBibleBook.book_name,
                 selectedBibleBook.chapter,
-            ); // 'Genesis'        
+            );
 
             setVerses(_selected.verses);
             setSelected_Bible(_selected.bible);

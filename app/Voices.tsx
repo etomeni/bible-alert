@@ -162,7 +162,7 @@ export default function Voices() {
                         />
                     </View>
                 ) : (
-                    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={styles.loadingContainer}>
                         <Loading />
                         <Text style={{
                             color: themeStyles.textColor.color,
@@ -197,6 +197,12 @@ const styles = StyleSheet.create({
     },
     forwardIcon: {
       color: 'gray'
+    },
+    loadingContainer: {
+        flex: 1, 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center'
     },
     
     emptyContainer: {

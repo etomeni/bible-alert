@@ -18,12 +18,11 @@ import Colors from '@/constants/Colors';
 import BackButtonArrow from '@/components/BackButtonArrow';
 import { _Playlists_, bibleInterface } from '@/constants/modelTypes';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
-import { getBibleBookVerses } from '@/constants/resources';
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import bible_KJV from "@/assets/bible/kjvTS";
 import { deletePlaylist, removeFromPlaylist } from '@/state/slices/playlistSlice';
 import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet'
-import { bibleVerseToRead, shareBibleVerse } from '@/constants/bibleResource';
+import { bibleVerseToRead, shareBibleVerse, getBibleBookVerses } from '@/constants/bibleResource';
 import { formatBibleVerseToDisplay } from '../(tabs)';
 import { handleAdd_Delete_PlaylistNotification, restartPlaylistNotification } from '@/constants/notifications';
 

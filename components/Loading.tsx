@@ -23,7 +23,7 @@ const Loading = () => {
 
   
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Animated.Image
           source={require('./../assets/images/icon.png')}
           style={[styles.logo, { transform: [{ scale }] }]}

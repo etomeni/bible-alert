@@ -79,7 +79,7 @@ export default function ScheduleAlert() {
                 const newNotificationData: notificationData = {
                     title: playlists.title,
                     // msg: "Here is the notification body", 
-                    msg: `${playlists.lists[currentIndex].book_name + " " + playlists.lists[currentIndex].chapter + ":" + playlists.lists[currentIndex].verse } \n ${playlists.lists[currentIndex].text}`,
+                    msg: `${playlists.lists[currentIndex].book_name + " " + playlists.lists[currentIndex].chapter + ":" + playlists.lists[currentIndex].verse } \n${playlists.lists[currentIndex].text}`,
                     schedule: {
                         hour: hourz * _incremental,
                         minute: minutez * _incremental,

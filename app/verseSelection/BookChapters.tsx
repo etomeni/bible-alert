@@ -3,22 +3,17 @@ import { SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity } fr
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from "expo-status-bar";
 
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/state/store";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 import Colors from "@/constants/Colors";
-// import { setSelectedBibleBook, setSelectedChapter, set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
-// import { getBibleBookChapters } from "@/constants/bibleResource";
 import { _bibleVerseSelection_ } from "@/constants/modelTypes";
 import BibleBooksChaptersVerses from "@/assets/bible/BibleBooksChaptersVerses";
 
 
 const BookChapters = () => {
     const queryParams = useLocalSearchParams();
-
-    // const dispatch = useDispatch<AppDispatch>();
     const settings = useSelector((state: RootState) => state.settings);
     const pSelected_BibleBook = useSelector((state: RootState) => state.selectedBibleBook);
-    // const selectedBibleBook = useSelector((state: RootState) => state.temptData.temptBibleBookSelection);
 
     const [chapters, setChapters] = useState<_bibleVerseSelection_[]>([]);
 
@@ -38,8 +33,6 @@ const BookChapters = () => {
                 book_number: book_number,
                 book_name: book_name      
             })
-
-            // setChapters(getBibleBookChapters( book_number > 39 ? bibleKJV.new : bibleKJV.old, book_name));
         } else {
             setChapters(BibleBooksChaptersVerses[pSelected_BibleBook.book - 1].chapters);
 
@@ -47,19 +40,11 @@ const BookChapters = () => {
                 book_number: pSelected_BibleBook.book,
                 book_name: pSelected_BibleBook.book_name      
             });
-
-            // setChapters(getBibleBookChapters( pSelected_BibleBook.book > 39 ? bibleKJV.new : bibleKJV.old, pSelected_BibleBook.book_name));
         }
     }, []);
 
 
     const onSelectBook = (chapter: _bibleVerseSelection_) => {
-        // dispatch(set_SelectedBible({
-        //     book_name: pSelected_BibleBook.book_name,
-        //     book: pSelected_BibleBook.book,
-        //     chapter: chapter,
-        //     verse: pSelected_BibleBook.verse
-        // }));
         router.push({ 
             pathname: '/verseSelection/BookVerses', 
             params: {
@@ -69,9 +54,6 @@ const BookChapters = () => {
                 total_verses: chapter.total_verses
             } 
         });
-
-        // dispatch(setTemptBibleVerseSelectionData(chapter));
-        // router.push("/verseSelection/BookVerses");
     }
 
     const themeStyles = StyleSheet.create({

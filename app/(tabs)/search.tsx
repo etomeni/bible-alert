@@ -17,7 +17,8 @@ import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import { useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/state/store";
-import { getBibleBookVerses } from '@/constants/resources';
+import { getBibleBookVerses } from '@/constants/bibleResource';
+
 import { StatusBar } from 'expo-status-bar';
  
 

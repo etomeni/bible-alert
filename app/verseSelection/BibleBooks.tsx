@@ -4,10 +4,8 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-import { useSelector, useDispatch } from 'react-redux';
-// import bibleKJV from "@/assets/bible/kjvTS";
-import { AppDispatch, RootState } from '@/state/store';
-// import { restructureBibleDataset } from "@/constants/bibleResource";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/state/store';
 import Colors from "@/constants/Colors";
 
 import { _bibleBookSelection_ } from "@/constants/modelTypes";
@@ -15,17 +13,11 @@ import AllBibleBooks from "@/components/AllBibleBooks";
 import NewBibleBooks from "@/components/NewBibleBooks";
 import OldBibleBooks from "@/components/OldTBibleBooks";
 import BibleBooksChaptersVerses from "@/assets/bible/BibleBooksChaptersVerses";
-// import { set_SelectedBible } from "@/state/slices/bibleSelectionSlice";
-
-
-// const newTestamentBooks = restructureBibleDataset(bibleKJV.new);
-// const oldTestamentBooks = restructureBibleDataset(bibleKJV.old);
 
 const oldTestamentBooks = BibleBooksChaptersVerses.slice(0, 39);
 const newTestamentBooks = BibleBooksChaptersVerses.slice(39);
 
 const BibleBooks = () => {
-    // const dispatch = useDispatch<AppDispatch>();
     const [activeTab, setActiveTab] = useState<'all' | 'old' | 'new'>('all');
     const selectedBibleBookRedux = useSelector((state: RootState) => state.selectedBibleBook);
     const settings = useSelector((state: RootState) => state.settings);
@@ -35,12 +27,6 @@ const BibleBooks = () => {
     const [allBibleBooks, setAllBibleBooks] = useState(BibleBooksChaptersVerses);
 
     const onSelectBook = (book: _bibleBookSelection_) => {
-        // dispatch(set_SelectedBible({
-        //     book_name: book.book_name,
-        //     book: book.book_number,
-        //     chapter: selectedBibleBookRedux.chapter,
-        //     verse: selectedBibleBookRedux.verse
-        // }));
         router.push({ 
             pathname: '/verseSelection/BookChapters', 
             params: {

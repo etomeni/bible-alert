@@ -6,7 +6,9 @@ import * as Clipboard from 'expo-clipboard';
 import { useEffect, useState  } from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-import { getBibleBookVerses, setLocalStorage } from '@/constants/resources';
+import { setLocalStorage } from '@/constants/resources';
+import { getBibleBookVerses } from '@/constants/bibleResource';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import { bibleInterface } from '@/constants/modelTypes';

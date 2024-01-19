@@ -1,5 +1,4 @@
-import { useState, memo } from "react";
-import { Text, Share, View } from "react-native";
+import { Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-root-toast";
 
@@ -13,22 +12,28 @@ import {
 } from "./modelTypes";
 
 export function getBibleBookVerses(
-  bible: bibleInterface[],
+  bookNumber: number,
   bookName: string,
   chapter: number
 ) {
+  const bible: bibleInterface[] =
+    bookNumber > 39 ? KJV_Bible.new : KJV_Bible.old;
+
   const _books: bibleInterface[] = bible.filter(
     (book: bibleInterface) =>
       book.book_name === bookName && book.chapter == chapter
   );
 
-  const uniqueBookVerses = _books.reduce((acc: any, book: bibleInterface) => {
-    const existingVerses = acc.find((b: any) => b === book.verse);
-    if (!existingVerses) {
-      acc.push(book.verse);
-    }
-    return acc;
-  }, []);
+  const uniqueBookVerses: number[] = _books.reduce(
+    (acc: any, book: bibleInterface) => {
+      const existingVerses = acc.find((b: any) => b === book.verse);
+      if (!existingVerses) {
+        acc.push(book.verse);
+      }
+      return acc;
+    },
+    []
+  );
 
   return {
     bible: _books,

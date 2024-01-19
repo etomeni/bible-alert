@@ -19,7 +19,7 @@ import Colors from '@/constants/Colors';
 import BackButtonArrow from '@/components/BackButtonArrow';
 import { _Playlists_, bibleInterface, scheduleInterface } from '@/constants/modelTypes';
 import { set_SelectedBible } from '@/state/slices/bibleSelectionSlice';
-import { getBibleBookVerses } from '@/constants/resources';
+import { getBibleBookVerses } from "@/constants/bibleResource";
 import { bibleDetails } from '@/state/slices/bibleVerseSlice';
 import bibleKJV from "@/assets/bible/kjv_all";
 import bible_KJV from "@/assets/bible/kjvTS";
