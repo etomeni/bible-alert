@@ -91,6 +91,10 @@ const playlistSlice = createSlice({
       });
 
       setLocalStorage("playlists", newState);
+      setLocalStorage("scheduledPlaylist", {
+        ...action.payload,
+        lastScheduledTimestamp: Date.now(),
+      });
       return newState;
     },
     offPreviousScheduledPlaylist: (

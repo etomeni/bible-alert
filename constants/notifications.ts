@@ -27,11 +27,11 @@ export async function schedulePushNotification(
   // Notifications.cancelAllScheduledNotificationsAsync();
 
   const gddf = notificationData.bibleVerse;
-  // const notificationId =
-  //   identifier == ""
-  //     ? `${gddf.book_name}${gddf.chapter}${gddf.verse}`
-  //     : identifier;
-  const notificationId = `${gddf.book_name}${gddf.chapter}${gddf.verse}`;
+  const notificationId =
+    identifier == ""
+      ? `${gddf.book_name}${gddf.chapter}${gddf.verse}`
+      : identifier;
+  // const notificationId = `${gddf.book_name}${gddf.chapter}${gddf.verse}`;
 
   if (Platform.OS == "android") {
     await Notifications.setNotificationChannelAsync(notificationId, {
@@ -229,7 +229,7 @@ export async function restartPlaylistNotification(new_Playlist: _Playlists_) {
 
   let currentIndex = 0;
   // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 300; i++) {
     const _incremental = i + 1;
     // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
     // totalSeconds += _sec;

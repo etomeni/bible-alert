@@ -16,30 +16,12 @@ export type selectedBibleInterface = {
   verse: number;
 };
 
-// export type playlistInterface = {
-//     book_name: string,
-//     book: number,
-//     chapter: number,
-//     verse: number,
-//     text: string,
-//     title?: string,
-//     note?: string,
-//     action?: string
-// }
-
 export type settingsInterface = {
   fontSize: number;
   colorTheme: "dark" | "light";
   searchResultLimit: number;
   notificationToken: string;
   voice: Voice;
-  // voiceName: string,
-  // voice: {
-  //     identifier: string,
-  //     name: string,
-  //     quality: any,
-  //     language: string
-  // }
 };
 
 export type _schedule_ = {
@@ -53,6 +35,7 @@ export type _Playlists_ = {
   description?: string;
   schedule?: _schedule_;
   lastPlayed?: bibleInterface;
+  lastScheduledTimestamp?: string | number;
   lists: bibleInterface[];
 };
 

@@ -18,6 +18,7 @@ import { getLocalStorage } from '@/constants/resources';
 import { _Playlists_, bibleInterface, scheduleInterface, settingsInterface } from '@/constants/modelTypes';
 import BackButtonArrow from '@/components/BackButtonArrow';
 import { scheduleNextNotification } from '@/constants/notifications';
+import CustomHeader from '@/components/CustomHeader';
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 // LogBox.ignoreAllLogs(); //Ignore all log notifications
 
@@ -291,6 +292,17 @@ function RootLayoutNav() {
                 ),
                 title: 'Test Notifications',
                 headerTitle: 'Test Notifications'
+              }} />
+
+              <Stack.Screen name="backup" options={{ 
+                headerShown: false,
+                headerTitleStyle:  { fontSize: 24 },
+                // header: () => <CustomHeader headerTitleText='Backup' />,
+                headerLeft: () => (
+                  <BackButtonArrow />
+                ),
+                title: 'Backup',
+                headerTitle: 'Backup'
               }} />
             </Stack>
           </ThemeProvider>

@@ -74,16 +74,6 @@ export default function ViewPlaylist() {
       setPlaylists(notificationPlaylist);
       setHighlightedVerse(notificationBibleVerse);
       _play_(notificationBibleVerse);
-      
-      // setTimeout(() => {
-      //   scheduleNextNotification(
-      //     allPlaylist_,
-      //     notificationPlaylist,
-      //     notificationBibleVerse,
-      //     notificationSchedule
-      //   );
-      // }, 500);
-
     }
   }, [lastNotificationResponse]);
   
@@ -373,7 +363,8 @@ export default function ViewPlaylist() {
       color: settings.colorTheme == 'dark' ? Colors.dark.text : Colors.light.text,
     },
     playSection: {
-      borderTopColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "gray"
+      borderTopColor: settings.colorTheme == 'dark' ? "#f6f3ea43" : "gray",
+      backgroundColor: settings.colorTheme == 'dark' ? Colors.dark.contentBackground : Colors.light.contentBackground
     }
 
   });

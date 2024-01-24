@@ -268,6 +268,12 @@ export default function TabFourScreen() {
             <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />
           </TouchableOpacity>
 
+          <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => router.push("/backup")}>
+            <Ionicons name="cloud-upload-outline" size={20} style={themeStyles.iconColor} />
+            <Text style={[styles.text, themeStyles.textColor]}>Backup Data</Text>
+            <Ionicons style={styles.forwardIcon} name="chevron-forward" size={20} />
+          </TouchableOpacity>
+          
           <TouchableOpacity style={[styles.listContainer, themeStyles.contentBg]} onPress={() => shareApp()}>
             <Ionicons name="share-social-outline" size={20} style={themeStyles.iconColor} />
             <Text style={[styles.text, themeStyles.textColor]}>Share App</Text>

@@ -1,5 +1,5 @@
-import { StyleSheet, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View } from 'react-native';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 import BackButtonArrow from './BackButtonArrow';
 import { useSelector } from 'react-redux';
 import Colors from '@/constants/Colors';
@@ -21,13 +21,13 @@ export default function CustomHeader(
     });
 
     return (
-        <SafeAreaView style={[themeStyles.headerBackground, styles.headerContainer]}>
+        <View style={[themeStyles.headerBackground, styles.headerContainer]}>
             <BackButtonArrow />
             <Text style={[themeStyles.textColor, styles.headerTitle]}>
                 { headerTitleText }
             </Text>
             <Text></Text>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 24,
-        textTransform: 'uppercase'
-        // fontWeight: 'bold'
+        textTransform: 'uppercase',
+        fontWeight: 'bold'
     }
 });
