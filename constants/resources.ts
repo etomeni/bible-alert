@@ -14,6 +14,11 @@ export async function getEnglishVoicesAsync() {
   return noVoice;
 }
 
+export function validateEmail(email: string) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Comprehensive email validation regex
+  return emailRegex.test(email);
+};
+
 // remove Special Characters And Replace Spaces
 export function sanitizedString(text: string) {
   // Use a regular expression to match special characters and spaces

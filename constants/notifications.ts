@@ -1,9 +1,8 @@
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import * as TaskManager from "expo-task-manager";
 import { router } from "expo-router";
-
-// import * as TaskManager from "expo-task-manager";
 
 import {
   _Playlists_,
@@ -11,12 +10,66 @@ import {
   notificationData,
   scheduleInterface,
 } from "./modelTypes";
+import { getLocalStorage } from "./resources";
+
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  ({ data, error, executionInfo }) => {
+    // console.log("Received a notification in the background!");
+    // Do something with the notification data
+    // getLocalStorageItem("scheduledPlaylist");
+    rescheduleNotificationHandler();
+    // getLocalStorage("scheduledPlaylist").then(async (res: any) => {
+    //   if (res) {
+    //     // const playlists = res.
+    //     const _sec = res.schedule.minutesIntervals * 60 + res.schedule.hourIntervals * 3600;
+    //     const additionalTime = _sec * 45 * 1000;
+    //     const xpectedEndTime = res.lastScheduledTimestamp + additionalTime;
+
+    //     const currentTime = Date.now();
+
+    //     if (currentTime > xpectedEndTime) {
+    //       // Cancel All Scheduled Notifications
+    //       await Notifications.cancelAllScheduledNotificationsAsync();
+
+    //       let currentIndex = 0;
+    //       for (let i = 0; i < 50; i++) {
+    //         const _incremental = i+1;
+    //         currentIndex = (currentIndex + 1) % res.lists.length;
+
+    //         const newNotificationData: notificationData = {
+    //           title: res.title,
+    //           // msg: "Here is the word of God for you this hour.",
+    //           msg: `${res.lists[currentIndex].book_name + " " + res.lists[currentIndex].chapter + ":" + res.lists[currentIndex].verse } \n${res.lists[currentIndex].text}`,
+    //           schedule: {
+    //             hour: res.schedule.hourIntervals * _incremental,
+    //             minute: res.schedule.minutesIntervals * _incremental,
+    //             repeats: res.schedule.status
+    //           },
+    //           extraData: 'Extra data goes here...',
+    //           bibleVerse: res.lists[currentIndex],
+    //           playlistData: res
+    //         }
+
+    //         const identifier = `${res.lists[currentIndex].book_name}${res.lists[currentIndex].chapter}${res.lists[currentIndex].verse}_${_incremental}`;
+    //         schedulePushNotification(newNotificationData, identifier);
+    //       }
+    //     }
+    //   }
+    // });
+  }
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    priority: Notifications.AndroidNotificationPriority.MAX,
   }),
 });
 
@@ -31,13 +84,16 @@ export async function schedulePushNotification(
     identifier == ""
       ? `${gddf.book_name}${gddf.chapter}${gddf.verse}`
       : identifier;
-  // const notificationId = `${gddf.book_name}${gddf.chapter}${gddf.verse}`;
 
   if (Platform.OS == "android") {
     await Notifications.setNotificationChannelAsync(notificationId, {
+      // name: notificationData.title,
+      name: notificationId,
       importance: Notifications.AndroidImportance.MAX,
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      bypassDnd: true,
+      // enableLights: true,
       vibrationPattern: [0, 250, 250, 250],
-      name: notificationData.title,
       description: notificationData.msg,
       sound: "urgent_simple.wav", // Provide ONLY the base filename
       showBadge: true,
@@ -50,12 +106,13 @@ export async function schedulePushNotification(
     notificationData.schedule.hour * 3600;
 
   await Notifications.scheduleNotificationAsync({
-    identifier: notificationId, // Platform.OS == "android" ? notificationId : undefined,
+    identifier: notificationId,
     content: {
       title: notificationData.title,
       body: notificationData.msg,
       sound: "urgent_simple.wav",
       autoDismiss: false,
+      priority: Notifications.AndroidNotificationPriority.MAX,
       // subtitle: '',
       vibrate: [0, 250, 250, 250],
       data: {
@@ -67,7 +124,7 @@ export async function schedulePushNotification(
     trigger: {
       seconds: notificationData.schedule.repeats ? _sec : 5,
       repeats: false,
-      channelId: notificationId, // Platform.OS == "android" ? notificationId : undefined,
+      channelId: notificationId,
     },
   });
 }
@@ -154,7 +211,7 @@ export function handleAdd_Delete_PlaylistNotification(
           : 0;
       const newBibleVerse = new_Playlist.lists[newIndex];
 
-      for (let i = 0; i < 500; i++) {
+      for (let i = 0; i < 50; i++) {
         const _incremental = i + 1;
         newIndex = (newIndex + 1) % new_Playlist.lists.length;
 
@@ -182,7 +239,7 @@ export function handleAdd_Delete_PlaylistNotification(
       }
     } else {
       let newIndex = 0;
-      for (let i = 0; i < 500; i++) {
+      for (let i = 0; i < 50; i++) {
         const _incremental = i + 1;
         newIndex = (newIndex + 1) % new_Playlist.lists.length;
 
@@ -228,12 +285,8 @@ export async function restartPlaylistNotification(new_Playlist: _Playlists_) {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   let currentIndex = 0;
-  // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
-  for (let i = 0; i < 300; i++) {
+  for (let i = 0; i < 50; i++) {
     const _incremental = i + 1;
-    // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
-    // totalSeconds += _sec;
-
     currentIndex = (currentIndex + 1) % new_Playlist.lists.length;
 
     const newNotificationData: notificationData = {
@@ -258,7 +311,6 @@ export async function restartPlaylistNotification(new_Playlist: _Playlists_) {
 
     const identifier = `${new_Playlist.lists[currentIndex].book_name}${new_Playlist.lists[currentIndex].chapter}${new_Playlist.lists[currentIndex].verse}_${_incremental}`;
     schedulePushNotification(newNotificationData, identifier);
-    // console.log(_incremental);
   }
 }
 
@@ -362,3 +414,61 @@ export async function registerForPushNotificationsAsync() {
 
 //   Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 // }
+
+export async function rescheduleNotificationHandler() {
+  const scheduledPlaylist = await getLocalStorage("scheduledPlaylist");
+
+  if (scheduledPlaylist) {
+    // const playlists = res.
+    const _sec =
+      scheduledPlaylist.schedule.minutesIntervals * 60 +
+      scheduledPlaylist.schedule.hourIntervals * 3600;
+    const additionalTime = _sec * 45 * 1000;
+    const xpectedEndTime =
+      scheduledPlaylist.lastScheduledTimestamp + additionalTime;
+
+    const currentTime = Date.now();
+
+    if (currentTime > xpectedEndTime) {
+      // Cancel All Scheduled Notifications
+      await Notifications.cancelAllScheduledNotificationsAsync();
+
+      let currentIndex = 0;
+      for (let i = 0; i < 50; i++) {
+        const _incremental = i + 1;
+        currentIndex = (currentIndex + 1) % scheduledPlaylist.lists.length;
+
+        const newNotificationData: notificationData = {
+          title: scheduledPlaylist.title,
+          // msg: "Here is the word of God for you this hour.",
+          msg: `${
+            scheduledPlaylist.lists[currentIndex].book_name +
+            " " +
+            scheduledPlaylist.lists[currentIndex].chapter +
+            ":" +
+            scheduledPlaylist.lists[currentIndex].verse
+          } \n${scheduledPlaylist.lists[currentIndex].text}`,
+          schedule: {
+            hour: scheduledPlaylist.schedule.hourIntervals * _incremental,
+            minute: scheduledPlaylist.schedule.minutesIntervals * _incremental,
+            repeats: scheduledPlaylist.schedule.status,
+          },
+          extraData: "Extra data goes here...",
+          bibleVerse: scheduledPlaylist.lists[currentIndex],
+          playlistData: scheduledPlaylist,
+        };
+
+        const identifier = `${scheduledPlaylist.lists[currentIndex].book_name}${scheduledPlaylist.lists[currentIndex].chapter}${scheduledPlaylist.lists[currentIndex].verse}_${_incremental}`;
+        schedulePushNotification(newNotificationData, identifier);
+      }
+
+      return true;
+    }
+  }
+  return false;
+
+  // getLocalStorage("scheduledPlaylist").then(async (res: any) => {
+  //   if (res) {
+  //   }
+  // });
+}

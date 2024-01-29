@@ -32,126 +32,6 @@ export default function ScheduleAlert() {
         _setMinutes(playlists.schedule?.minutesIntervals || '');
     }, [playlists]);
     
-    // const savePlaylistSchedule = async () => {
-    //     setBtnLoadingState(true);
-
-    //     if (scheduleAlertStatus) {
-    //         const hourz = _hours || Number(_hours) > 0 ? Number(_hours) : 0;
-    //         const minutez = _minutes || Number(_minutes) > 0 ? Number(_minutes) : 0;
-    //         if (!hourz && minutez < 1) {
-    //             setError(true);
-    //             return;
-    //         } else {
-    //             setError(false);
-    //         }
-
-    //         // set the status of all other playlist to FALSE
-    //         const xchedule = {
-    //             status: scheduleAlertStatus,
-    //             hourIntervals: _hours,
-    //             minutesIntervals: _minutes,
-    //         };
-    //         dispatch(newScheduledPlaylist({
-    //             ...playlists,
-    //             title: playlists.title,
-    //             schedule: xchedule
-    //         }));
-
-    //         dispatch(setTemptPlaylistData({...playlists, schedule: xchedule}));
-
-    //         // Cancel All Scheduled Notifications
-    //         await Notifications.cancelAllScheduledNotificationsAsync();
-
-    //         // dispatch(schedulePlaylist({
-    //         //     title: playlists.title,
-    //         //     schedule: { 
-    //         //         // ...playlists.schedule,
-    //         //         status: scheduleAlertStatus,
-    //         //         hourIntervals: _hours,
-    //         //         minutesIntervals: _minutes,
-    //         //     },
-    //         // }));
-
-
-    //         // let totalSeconds = 0;
-    //         // const maxYearSeconds = 365 * 24 * 60 * 60; // Seconds in a year
-    //         // // const _sec = minutez * 60 + hourz * 3600;
-    //         let currentIndex = 0;
-    //         // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
-    //         for (let i = 0; i < 300; i++) {
-    //             const _incremental = i+1;
-    //             // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
-    //             // totalSeconds += _sec;
-
-    //             currentIndex = (currentIndex + 1) % playlists.lists.length;
-
-    //             const newNotificationData: notificationData = {
-    //                 title: playlists.title,
-    //                 // msg: "Here is the notification body", 
-    //                 msg: `${playlists.lists[currentIndex].book_name + " " + playlists.lists[currentIndex].chapter + ":" + playlists.lists[currentIndex].verse } \n${playlists.lists[currentIndex].text}`,
-    //                 schedule: {
-    //                     hour: hourz * _incremental,
-    //                     minute: minutez * _incremental,
-    //                     repeats: scheduleAlertStatus
-    //                 }, 
-    //                 extraData: 'Extra data goes here...',
-    //                 bibleVerse: playlists.lists[currentIndex],
-    //                 playlistData: playlists
-    //             }
-
-    //             const identifier = `${playlists.lists[currentIndex].book_name}${playlists.lists[currentIndex].chapter}${playlists.lists[currentIndex].verse}_${_incremental}`;
-    //             schedulePushNotification(newNotificationData, identifier);
-    //             // console.log(_incremental);
-    //         }
-
-    //         // const newNotificationData: notificationData = {
-    //         //     title: playlists.title,
-    //         //     // msg: "Here is the notification body", 
-    //         //     msg: `${playlists.lists[0].book_name + " " + playlists.lists[0].chapter + ":" + playlists.lists[0].verse } \n ${playlists.lists[0].text}`,
-    //         //     schedule: {
-    //         //         hour: hourz,
-    //         //         minute: minutez,
-    //         //         repeats: scheduleAlertStatus
-    //         //     }, 
-    //         //     extraData: 'Extra data goes here...',
-    //         //     bibleVerse: playlists.lists[0],
-    //         //     playlistData: playlists
-    //         // }
-
-    //         // schedulePushNotification(newNotificationData);
-
-    //         const msg = `${playlists.title} scheduled to play every ${_hours ? _hours + ' hour(s) ' : ''} :${_minutes} minutes`;
-    //         let toast = Toast.show(msg, {
-    //             duration: Toast.durations.LONG,
-    //             position: Toast.positions.BOTTOM,
-    //             shadow: true,
-    //             animation: true,
-    //             // hideOnPress: true,
-    //             // delay: 0,
-    //         });
-    //     } else {
-    //         if (playlists.schedule?.status) {
-    //             Notifications.cancelAllScheduledNotificationsAsync();
-    //             Notifications.dismissAllNotificationsAsync();
-    //         }
-
-    //         const xchedule = {
-    //             status: false,
-    //             hourIntervals: '',
-    //             minutesIntervals: '',
-    //         };
-
-    //         dispatch(schedulePlaylist({
-    //             title: playlists.title,
-    //             schedule: xchedule,
-    //         }));
-    //         removeLocalStorageItem("scheduledPlaylist");
-    //         dispatch(setTemptPlaylistData({...playlists, schedule: xchedule}));
-    //     }
-    //     setBtnLoadingState(false);
-    //     router.back();
-    // }
-    
     const savePlaylistSchedule = async () => {
         setBtnLoadingState(true);
 
@@ -182,32 +62,14 @@ export default function ScheduleAlert() {
             // Cancel All Scheduled Notifications
             await Notifications.cancelAllScheduledNotificationsAsync();
 
-            // dispatch(schedulePlaylist({
-            //     title: playlists.title,
-            //     schedule: { 
-            //         // ...playlists.schedule,
-            //         status: scheduleAlertStatus,
-            //         hourIntervals: _hours,
-            //         minutesIntervals: _minutes,
-            //     },
-            // }));
-
-
-            // let totalSeconds = 0;
-            // const maxYearSeconds = 365 * 24 * 60 * 60; // Seconds in a year
-            // // const _sec = minutez * 60 + hourz * 3600;
             let currentIndex = 0;
-            // for (let i = 0; totalSeconds < maxYearSeconds; i++) {
             for (let i = 0; i < 50; i++) {
                 const _incremental = i+1;
-                // const _sec = (minutez * 60 + hourz * 3600) * _incremental;
-                // totalSeconds += _sec;
-
                 currentIndex = (currentIndex + 1) % playlists.lists.length;
 
                 const newNotificationData: notificationData = {
                     title: playlists.title,
-                    // msg: "Here is the notification body", 
+                    // msg: "Here is the word of God for you this hour.", 
                     msg: `${playlists.lists[currentIndex].book_name + " " + playlists.lists[currentIndex].chapter + ":" + playlists.lists[currentIndex].verse } \n${playlists.lists[currentIndex].text}`,
                     schedule: {
                         hour: hourz * _incremental,
@@ -221,24 +83,7 @@ export default function ScheduleAlert() {
 
                 const identifier = `${playlists.lists[currentIndex].book_name}${playlists.lists[currentIndex].chapter}${playlists.lists[currentIndex].verse}_${_incremental}`;
                 schedulePushNotification(newNotificationData, identifier);
-                // console.log(_incremental);
             }
-
-            // const newNotificationData: notificationData = {
-            //     title: playlists.title,
-            //     // msg: "Here is the notification body", 
-            //     msg: `${playlists.lists[0].book_name + " " + playlists.lists[0].chapter + ":" + playlists.lists[0].verse } \n ${playlists.lists[0].text}`,
-            //     schedule: {
-            //         hour: hourz,
-            //         minute: minutez,
-            //         repeats: scheduleAlertStatus
-            //     }, 
-            //     extraData: 'Extra data goes here...',
-            //     bibleVerse: playlists.lists[0],
-            //     playlistData: playlists
-            // }
-
-            // schedulePushNotification(newNotificationData);
 
             const msg = `${playlists.title} scheduled to play every ${_hours ? _hours + ' hour(s) ' : ''} :${_minutes} minutes`;
             let toast = Toast.show(msg, {

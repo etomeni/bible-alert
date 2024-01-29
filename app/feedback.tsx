@@ -9,6 +9,7 @@ import { RootState } from '@/state/store';
 import Colors from '@/constants/Colors';
 import Toast from 'react-native-root-toast';
 import { evaluatedDate, formatedTime, save2FirestoreDB } from '@/constants/firebase';
+import { validateEmail } from '@/constants/resources';
 
 
 export default function feedback() {
@@ -19,10 +20,11 @@ export default function feedback() {
     const [errorMsg, setErrorMsg] = useState('');
 
     const onSubmitFeedbackForm = () => {
+      
         if (name == '' || name.length < 2) {
             setErrorMsg("Please enter a name you'll like us to call you.");
             return;
-        } else if (email == '' || email.length < 8) {
+        } else if (email == '' || email.length < 8 || !validateEmail(email)) {
             setErrorMsg("Please enter a valid email address.");
             return;
         } else if (message == '' || message.length < 5) {

@@ -15,7 +15,8 @@ import { updateSettings } from '@/state/slices/settingsSlice';
 
 import Colors from '@/constants/Colors';
 import { restoreBookmark } from '@/state/slices/bookmarkSlice';
-import { restorePlaylists } from '@/state/slices/playlistSlice';
+import { newScheduledPlaylist, restorePlaylists } from '@/state/slices/playlistSlice';
+import { rescheduleNotificationHandler } from '@/constants/notifications';
 // import { scheduleBackgroundNotification } from '@/constants/notifications';
 
 // scheduleBackgroundNotification();
@@ -43,6 +44,27 @@ export default function TabLayout() {
         dispatch(restorePlaylists(res))
       }
     });
+
+
+
+  getLocalStorage("scheduledPlaylist").then(async (res: any) => {
+    if (res) {
+      const _sec = res.schedule.minutesIntervals * 60 + res.schedule.hourIntervals * 3600;
+      const additionalTime = _sec * 45 * 1000;
+      const xpectedEndTime = res.lastScheduledTimestamp + additionalTime;
+    
+      const currentTime = Date.now();
+    
+      if (currentTime > xpectedEndTime) {
+        rescheduleNotificationHandler().then((result: boolean) => {
+          if (result) {
+            // set the status of all other playlist to FALSE
+            dispatch(newScheduledPlaylist(res));
+          }
+        })
+      }
+    }
+  });
 
   }, []);
   
@@ -125,21 +147,21 @@ export default function TabLayout() {
                 <Link href="/verseSelection/BookChapters" asChild style={ styles.selctionWrapper }>
                   <Pressable style={{ ...styles.textContainer, ...styles.bookSelection, ...themeStyles.border }}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.chapter } </Text>
-                    <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
+                    <MaterialIcons name="keyboard-arrow-down" size={18} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
 
                 <Link href="/verseSelection/BookVerses" asChild style={ styles.selctionWrapper }>
                   <Pressable style={styles.textContainer}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> { selectedBibleBook.verse } </Text>
-                    <MaterialIcons name="keyboard-arrow-down" size={20} style={themeStyles.iconColor} />
+                    <MaterialIcons name="keyboard-arrow-down" size={18} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
 
                 <Link href="/verseSelection/Versions" asChild style={ styles.selctionWrapper }>
                   <Pressable style={{ ...styles.textContainer, ...styles.versionSelction, ...themeStyles.versionSelction}}>
                     <Text style={[styles.indexSelectionText, themeStyles.textColor]}> KJV </Text>
-                    <MaterialIcons name="arrow-drop-down" size={20} style={themeStyles.iconColor} />
+                    <MaterialIcons name="arrow-drop-down" size={18} style={themeStyles.iconColor} />
                   </Pressable>
                 </Link>
               </View>
@@ -186,7 +208,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 16,
+    marginHorizontal: 16,
+    marginVertical: 10,
     borderStyle: 'solid',
     borderWidth: 1.2,
     borderRadius: 20,
@@ -216,7 +239,7 @@ const styles = StyleSheet.create({
   },
   indexSelectionText: {
     // textAlign: 'justify',
-    fontSize: 18
+    fontSize: 16
   }
 
 

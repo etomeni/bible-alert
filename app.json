@@ -29,6 +29,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "WAKE_LOCK"
+      ],
       "package": "com.biblealert.app",
       "versionCode": 1,
       "playStoreUrl": "https://play.google.com/store/apps/details?id=com.biblealert.app"
