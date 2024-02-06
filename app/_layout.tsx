@@ -78,12 +78,12 @@ function handleNotificationNavigations() {
     }
 
     Notifications.getLastNotificationResponseAsync()
-      .then(response => {
-        if (!isMounted || !response?.notification) {
-          return;
-        }
-        redirect(response?.notification);
-      });
+    .then(response => {
+      if (!isMounted || !response?.notification) {
+        return;
+      }
+      redirect(response?.notification);
+    });
 
     const _subscription = Notifications.addNotificationReceivedListener(
       (event) => {
@@ -103,7 +103,6 @@ function handleNotificationNavigations() {
             );
           }
         });
-    
       }
     );
 

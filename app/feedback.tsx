@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
@@ -18,6 +18,7 @@ export default function feedback() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
+    const [btnLoadingState, setBtnLoadingState] = useState(false);
 
     const onSubmitFeedbackForm = () => {
       
@@ -32,12 +33,13 @@ export default function feedback() {
             return;
         }
         setErrorMsg('');
-
+        setBtnLoadingState(true);
         const createdAt = `${evaluatedDate('display')}T${formatedTime()}`;
 
         save2FirestoreDB("bibleAlertFeedback", { name, email, message, createdAt })
         .then((res: any) => {
             const msg = `Thanks for contacting, we'll get back to you shortly.`;
+            setBtnLoadingState(false);
             let toast = Toast.show(msg, {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,
@@ -50,7 +52,7 @@ export default function feedback() {
         }).catch(() => {
             const msg = `Ooops an error occurred.`;
             setErrorMsg(msg);
-
+            setBtnLoadingState(false);
             let toast = Toast.show(msg, {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,
@@ -195,10 +197,14 @@ export default function feedback() {
                 <TouchableOpacity
                     onPress={() => { onSubmitFeedbackForm(); }}
                     disabled={name && email && message ? false : true}
-                    style={[styles.btnContainer, { backgroundColor: name && email && message ? Colors.primary : Colors.primaryDark }]}
+                    style={[styles.btnContainer, { backgroundColor: (name && email && message) || !btnLoadingState ? Colors.primary : Colors.primaryDark }]}
                 >
                     <Text style={[themeStyles.textColor, styles.btnText, { color: name && email && message ? themeStyles.textColor.color : 'gray' } ]}>
-                        Submit
+                        {
+                            btnLoadingState ? (
+                                <ActivityIndicator size="small" color="#fff" />
+                            ) : "Submit"
+                        }
                     </Text>
                 </TouchableOpacity>
             </View>

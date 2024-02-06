@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 import Toast from 'react-native-root-toast';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,10 +12,11 @@ import Colors from '@/constants/Colors';
 import { _Playlists_, notificationData } from '@/constants/modelTypes';
 import { AppDispatch, RootState } from '@/state/store';
 import { newScheduledPlaylist, schedulePlaylist } from '@/state/slices/playlistSlice';
-import { schedulePushNotification } from '@/constants/notifications';
+import { registerForPushNotificationsAsync, schedulePushNotification } from '@/constants/notifications';
 import BackButtonArrow from '@/components/BackButtonArrow';
 import { setTemptPlaylistData } from '@/state/slices/temptDataSlice';
 import { removeLocalStorageItem } from '@/constants/resources';
+import { save2FirestoreDB } from '@/constants/firebase';
 
 export default function ScheduleAlert() {
     const dispatch = useDispatch<AppDispatch>();
@@ -44,6 +46,28 @@ export default function ScheduleAlert() {
             } else {
                 setError(false);
             }
+
+
+
+            
+
+            // ask for push notification permission and also get token
+            registerForPushNotificationsAsync().then((token) => {
+                if (token) {
+                    const data2Backend = {
+                        token,
+                        deviceName: Device.deviceName,
+                        deviceBrand: Device.brand,
+                        deviceModelName: Device.modelName,
+                        createdAt: Date.now(),
+                    };
+                    save2FirestoreDB("users", data2Backend, token).then();
+                }
+            });
+
+
+
+
 
             // set the status of all other playlist to FALSE
             const xchedule = {

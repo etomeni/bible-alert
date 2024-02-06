@@ -50,7 +50,7 @@ export default function TabFourScreen() {
 
   const shareApp = async () => {
     try {
-      const appUrl = "https://play.google.com/store/apps/details?id=com.biblealert.app";
+      const appUrl = "https://play.google.com/store/apps/details?id=com.alertbible.app";
       const shareResult = await Share.share({
         title: "Bible Alert Mobile App",
         message: `Download the Bible Alert Mobile App \n\n ${appUrl}`
@@ -91,9 +91,9 @@ export default function TabFourScreen() {
   }
 
   const rateOnPlayStore = () => {
-    const googlePackageName = "com.biblealert.app";
+    const googlePackageName = "com.alertbible.app";
     const appleStoreId = '';
-    // "https://play.google.com/store/apps/details?id=com.biblealert.app"
+    // "https://play.google.com/store/apps/details?id=com.alertbible.app"
 
     if (Platform.OS == 'android') {
       Linking.openURL(`market://details?id=${googlePackageName}`).catch(err =>

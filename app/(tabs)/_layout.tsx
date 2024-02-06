@@ -45,30 +45,26 @@ export default function TabLayout() {
       }
     });
 
-
-
-  getLocalStorage("scheduledPlaylist").then(async (res: any) => {
-    if (res) {
-      const _sec = res.schedule.minutesIntervals * 60 + res.schedule.hourIntervals * 3600;
-      const additionalTime = _sec * 45 * 1000;
-      const xpectedEndTime = res.lastScheduledTimestamp + additionalTime;
-    
-      const currentTime = Date.now();
-    
-      if (currentTime > xpectedEndTime) {
-        rescheduleNotificationHandler().then((result: boolean) => {
-          if (result) {
-            // set the status of all other playlist to FALSE
-            dispatch(newScheduledPlaylist(res));
-          }
-        })
+    getLocalStorage("scheduledPlaylist").then(async (res: any) => {
+      if (res) {
+        const _sec = res.schedule.minutesIntervals * 60 + res.schedule.hourIntervals * 3600;
+        const additionalTime = _sec * 45 * 1000;
+        const xpectedEndTime = res.lastScheduledTimestamp + additionalTime;
+      
+        const currentTime = Date.now();
+      
+        if (currentTime > xpectedEndTime) {
+          rescheduleNotificationHandler().then((result: boolean) => {
+            if (result) {
+              // set the status of all other playlist to FALSE
+              dispatch(newScheduledPlaylist(res));
+            }
+          })
+        }
       }
-    }
-  });
-
+    });
   }, []);
   
-
   const themeStyles = StyleSheet.create({
     text: {
       // marginBottom: 16,

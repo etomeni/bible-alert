@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Alert Bible",
-    "slug": "biblealert",
+    "slug": "alertbible",
     "description": "",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,7 +22,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.biblealert.app"
+      "bundleIdentifier": "com.alertbible.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,9 +32,9 @@
       "permissions": [
         "WAKE_LOCK"
       ],
-      "package": "com.biblealert.app",
+      "package": "com.alertbible.app",
       "versionCode": 1,
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.biblealert.app"
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.alertbible.app"
     },
     "web": {
       "bundler": "metro",
@@ -65,7 +65,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "57b57f08-315d-4140-8c1f-b21a3b72f604"
+        "projectId": "e32e442e-718a-4f3c-a661-ad73bedd8b2a"
       }
     }
   }
