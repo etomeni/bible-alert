@@ -10,7 +10,7 @@ import {
   notificationData,
   scheduleInterface,
 } from "./modelTypes";
-import { getLocalStorage } from "./resources";
+import { getLocalStorage, projectId } from "./resources";
 
 const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
 
@@ -360,12 +360,18 @@ export async function registerForPushNotificationsAsync() {
     }
     // Learn more about projectId:
     // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId: "com.alertbible.app",
-      })
-    ).data;
+    // token = (
+    //   await Notifications.getExpoPushTokenAsync({
+    //     projectId: "com.alertbible.app",
+    //   })
+    // ).data;
+
+    const dasdas = await Notifications.getExpoPushTokenAsync({
+      projectId: projectId,
+    });
+    token = dasdas.data;
     // console.log(token);
+    // alert(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }

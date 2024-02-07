@@ -14,6 +14,7 @@ import Toast from 'react-native-root-toast';
 import Slider from '@react-native-community/slider';
 import Colors from '@/constants/Colors';
 import { StatusBar } from 'expo-status-bar';
+import { projectId } from '@/constants/resources';
 
 
 export default function TabFourScreen() {
@@ -50,7 +51,7 @@ export default function TabFourScreen() {
 
   const shareApp = async () => {
     try {
-      const appUrl = "https://play.google.com/store/apps/details?id=com.alertbible.app";
+      const appUrl = `https://play.google.com/store/apps/details?id=${projectId}`;
       const shareResult = await Share.share({
         title: "Bible Alert Mobile App",
         message: `Download the Bible Alert Mobile App \n\n ${appUrl}`
@@ -91,9 +92,8 @@ export default function TabFourScreen() {
   }
 
   const rateOnPlayStore = () => {
-    const googlePackageName = "com.alertbible.app";
+    const googlePackageName = projectId;
     const appleStoreId = '';
-    // "https://play.google.com/store/apps/details?id=com.alertbible.app"
 
     if (Platform.OS == 'android') {
       Linking.openURL(`market://details?id=${googlePackageName}`).catch(err =>

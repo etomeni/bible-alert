@@ -1,28 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, SafeAreaView, StyleSheet } from 'react-native';
+import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { scheduleNextNotification, schedulePushNotification } from '@/constants/notifications';
-// import { setNotificationToken } from '@/state/slices/settingsSlice';
-import { _Playlists_, bibleInterface, notificationData, scheduleInterface } from '@/constants/modelTypes';
+import { scheduleNextNotification } from '@/constants/notifications';
+import { _Playlists_, bibleInterface, scheduleInterface } from '@/constants/modelTypes';
 import Colors from '@/constants/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/state/store';
 import BackButtonArrow from '@/components/BackButtonArrow';
-import { addToPlaylist } from '@/state/slices/playlistSlice';
 import { setTemptPlaylistData } from '@/state/slices/temptDataSlice';
-import { getLocalStorage } from '@/constants/resources';
 
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      priority: Notifications.AndroidNotificationPriority.MAX,
     }),
 });
 
 export default function App() {
-    const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState<any>(false);
     const notificationListener: any = useRef();
     const responseListener: any = useRef();
@@ -31,11 +28,6 @@ export default function App() {
     const playlists = useSelector((state: RootState) => state.playlists);
 
     useEffect(() => {
-        // registerForPushNotificationsAsync().then((token: any) => {
-        //     setExpoPushToken(token);
-        //     dispatch(setNotificationToken(token || ''));
-        // });
-
         notificationListener.current = Notifications.addNotificationReceivedListener((notification: any) => {
             setNotification(notification);
             const notificationPlaylist: _Playlists_ = notification.request.content.data.playlist;
@@ -164,7 +156,6 @@ export default function App() {
                     alignItems: 'center',
                     justifyContent: 'space-around',
                 }}>
-                {/* <Text style={themeStyles.textColor}>Your expo push token: {expoPushToken}</Text> */}
                 <View style={{ alignItems: 'center', justifyContent: 'center', padding: 16 }}>
                     <Text style={[themeStyles.textColor, {fontSize: 30, fontWeight: 'bold', marginVertical: 20}]}>
                         Title: {notification && notification.request.content.title} 

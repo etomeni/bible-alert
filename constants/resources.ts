@@ -1,5 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 import { Voice, getAvailableVoicesAsync } from "expo-speech";
+
+export const projectId =
+  Constants.expoConfig?.extra?.eas.projectId || "com.alertbible.app";
 
 export async function getEnglishVoicesAsync() {
   const voices: Voice[] = await getAvailableVoicesAsync();
@@ -17,7 +21,7 @@ export async function getEnglishVoicesAsync() {
 export function validateEmail(email: string) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Comprehensive email validation regex
   return emailRegex.test(email);
-};
+}
 
 // remove Special Characters And Replace Spaces
 export function sanitizedString(text: string) {

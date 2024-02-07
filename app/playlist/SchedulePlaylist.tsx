@@ -59,11 +59,23 @@ export default function ScheduleAlert() {
                         deviceName: Device.deviceName,
                         deviceBrand: Device.brand,
                         deviceModelName: Device.modelName,
+
+                        notification: {
+                            schedule: {
+                                hour: hourz,
+                                minute: minutez,
+                                repeats: scheduleAlertStatus
+                            },
+                            title: playlists.title,
+                            playlistData: playlists
+                        },
+                        
                         createdAt: Date.now(),
                     };
                     save2FirestoreDB("users", data2Backend, token).then();
                 }
             });
+
 
 
 
@@ -123,6 +135,34 @@ export default function ScheduleAlert() {
                 Notifications.cancelAllScheduledNotificationsAsync();
                 Notifications.dismissAllNotificationsAsync();
             }
+
+
+            // ask for push notification permission and also get token
+            registerForPushNotificationsAsync().then((token) => {
+                if (token) {
+                    const data2Backend = {
+                        token,
+                        deviceName: Device.deviceName,
+                        deviceBrand: Device.brand,
+                        deviceModelName: Device.modelName,
+
+                        notification: {
+                            schedule: {
+                                hour: 0,
+                                minute: 0,
+                                repeats: false
+                            },
+                            title: '',
+                            playlistData: []
+                        },
+                        
+                        createdAt: Date.now(),
+                    };
+                    save2FirestoreDB("users", data2Backend, token).then();
+                }
+            });
+
+
 
             const xchedule = {
                 status: false,
