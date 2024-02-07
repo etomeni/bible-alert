@@ -10,15 +10,6 @@ import BackButtonArrow from '@/components/BackButtonArrow';
 import { setTemptPlaylistData } from '@/state/slices/temptDataSlice';
 
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      priority: Notifications.AndroidNotificationPriority.MAX,
-    }),
-});
-
 export default function App() {
     const [notification, setNotification] = useState<any>(false);
     const notificationListener: any = useRef();

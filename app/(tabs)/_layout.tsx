@@ -17,9 +17,73 @@ import Colors from '@/constants/Colors';
 import { restoreBookmark } from '@/state/slices/bookmarkSlice';
 import { newScheduledPlaylist, restorePlaylists } from '@/state/slices/playlistSlice';
 import { rescheduleNotificationHandler } from '@/constants/notifications';
-// import { scheduleBackgroundNotification } from '@/constants/notifications';
 
-// scheduleBackgroundNotification();
+import * as Notifications from "expo-notifications";
+import * as TaskManager from "expo-task-manager";
+
+
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  ({ data, error, executionInfo }) => {
+    // console.log("Received a notification in the background!");
+    // Do something with the notification data
+    // getLocalStorageItem("scheduledPlaylist");
+    rescheduleNotificationHandler();
+    // getLocalStorage("scheduledPlaylist").then(async (res: any) => {
+    //   if (res) {
+    //     // const playlists = res.
+    //     const _sec = res.schedule.minutesIntervals * 60 + res.schedule.hourIntervals * 3600;
+    //     const additionalTime = _sec * 45 * 1000;
+    //     const xpectedEndTime = res.lastScheduledTimestamp + additionalTime;
+
+    //     const currentTime = Date.now();
+
+    //     if (currentTime > xpectedEndTime) {
+    //       // Cancel All Scheduled Notifications
+    //       await Notifications.cancelAllScheduledNotificationsAsync();
+
+    //       let currentIndex = 0;
+    //       for (let i = 0; i < 50; i++) {
+    //         const _incremental = i+1;
+    //         currentIndex = (currentIndex + 1) % res.lists.length;
+
+    //         const newNotificationData: notificationData = {
+    //           title: res.title,
+    //           // msg: "Here is the word of God for you this hour.",
+    //           msg: `${res.lists[currentIndex].book_name + " " + res.lists[currentIndex].chapter + ":" + res.lists[currentIndex].verse } \n${res.lists[currentIndex].text}`,
+    //           schedule: {
+    //             hour: res.schedule.hourIntervals * _incremental,
+    //             minute: res.schedule.minutesIntervals * _incremental,
+    //             repeats: res.schedule.status
+    //           },
+    //           extraData: 'Extra data goes here...',
+    //           bibleVerse: res.lists[currentIndex],
+    //           playlistData: res
+    //         }
+
+    //         const identifier = `${res.lists[currentIndex].book_name}${res.lists[currentIndex].chapter}${res.lists[currentIndex].verse}_${_incremental}`;
+    //         schedulePushNotification(newNotificationData, identifier);
+    //       }
+    //     }
+    //   }
+    // });
+  }
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    priority: Notifications.AndroidNotificationPriority.MAX,
+  }),
+});
+
+
 
 export default function TabLayout() {
   const selectedBibleBook = useSelector((state: RootState) => state.selectedBibleBook);
